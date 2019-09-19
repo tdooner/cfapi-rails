@@ -1,24 +1,18 @@
-# README
+# brigade.network
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+brigade list should be as official as possible
+-> sync it from brigade-information.json as a starting point
 
-Things you may want to cover:
+when new official brigades are added to the JSON, create them.
+wehn brigades are removed from the JSON, remove them here
+when brigades are changed in the JSON, change them here
+  -> always update meetup URL to be the latest URL for the brigade
 
-* Ruby version
+import brigade data from meetup
+  member information - count, names, emails
+  event information - new event
 
-* System dependencies
+list your brigade's events
 
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+connect slack too
+  member information -> who's active?

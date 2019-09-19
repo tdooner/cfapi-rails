@@ -1,14 +1,32 @@
 class Brigade < ApplicationRecord
-  self.inheritance_column = nil
+  def self.replace_all_from_brigade_information(brigades)
+    Brigade.transaction do
+      official_brigades = brigades.map do |brigade|
+        json = brigade.body
+        is_official = json['tags'].include?('Code for America') && json['tags'].include?('Official')
 
-  include SyncGithubActivity
+        existing = Brigade.find_by(name: json['name'])
+        new_attributes = {
+          name: json['name'],
+          meetup_url: (json['events_url'] if json['events_url'].try(:match, %r{\Ahttps?://www\.meetup\.com})),
+          github_url: (json['projects_list_url'] if json['projects_list_url'].try(:match, %r{\Ahttps?://github\.com})),
+        }.compact
 
-  scope :with_tags, ->(*tags) { where('tags ?& array[:tags]', tags: tags) }
-  scope :official_cfa, -> { with_tags('Code for America', 'Official') }
+        if !existing && is_official
+          Brigade.create(new_attributes)
+        elsif existing && !is_official
+          # remove no-longer-official brigades
+          existing.destroy
+          nil
+        elsif existing
+          existing.meetup_url ||= new_attributes[:meetup_url]
+          existing.github_url ||= new_attributes[:github_url]
+          existing.save
+          existing
+        end
+      end
 
-  def self.from_brigade_information(object)
-    find_or_initialize_by(name: object[:name]).tap do |record|
-      record.assign_attributes(object)
+      Brigade.where.not(id: official_brigades).destroy_all
     end
   end
 end
