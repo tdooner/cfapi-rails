@@ -10,6 +10,7 @@ gem 'rails', '~> 5.2.1'
 # Application dependencies
 gem 'bootsnap', '>= 1.1.0', require: false
 gem 'faraday-http-cache'
+gem 'haml-rails'
 gem 'octokit'
 gem 'pg'
 gem 'puma', '~> 3.11'
