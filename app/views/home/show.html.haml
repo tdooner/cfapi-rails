@@ -1,3 +1,7 @@
-%ul
-  - @brigades.each do |brigade|
-    %li= brigade.name
+.container
+  .row
+    - @brigades.each do |brigade|
+      .col-4
+        .card
+          .card-body
+            .card-title= brigade.name

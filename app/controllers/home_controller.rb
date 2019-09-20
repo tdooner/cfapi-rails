@@ -1,5 +1,5 @@
 class HomeController < ApplicationController
   def show
-    @brigades = Brigade.all
+    @brigades = Brigade.all.order(:name)
   end
 end
