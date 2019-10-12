@@ -9,9 +9,12 @@ gem 'rails', '~> 5.2.1'
 
 # Application dependencies
 gem 'bootsnap', '>= 1.1.0', require: false
+gem 'devise'
 gem 'faraday-http-cache'
 gem 'haml-rails'
 gem 'octokit'
+gem 'omniauth'
+gem 'omniauth-github'
 gem 'pg'
 gem 'puma', '~> 3.11'
 gem 'redis', '~> 4.0'

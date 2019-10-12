@@ -10,6 +10,7 @@ RSpec.describe HomeController do
 
     it 'renders' do
       expect(response).to be_successful
+      expect(response.body).to include("Brigade Network")
     end
   end
 end
