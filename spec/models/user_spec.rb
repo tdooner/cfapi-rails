@@ -11,6 +11,11 @@ RSpec.describe User, type: :model do
           'info' => {
             'email' => 'test@example.com',
           },
+          'extra' => {
+            'all_emails' => [
+              { 'email' => 'test@example.com', 'verified' => true },
+            ],
+          },
         }
       end
 
