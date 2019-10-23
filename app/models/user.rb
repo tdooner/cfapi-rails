@@ -9,10 +9,12 @@ class User < ApplicationRecord
     user = case auth_payload['provider']
            when 'github'
              User.find_or_initialize_by(email: auth_payload['info']['email']).tap do |user|
-               user.confirmed_at = Time.now if auth_payload['extra']['all_emails'].find { |e| e['email'] == user.email && e['verified'] }
+               user.confirmed_at = Time.now if auth_payload['extra']['all_emails'].find { |e| e['email'] == user.email && e['verified'] } && user.confirmed_at.nil?
              end
-           else
-             require 'pry'; binding.pry
+           when 'salesforce'
+             User.find_or_initialize_by(email: auth_payload['extra']['email']).tap do |user|
+               user.confirmed_at = Time.now if auth_payload['extra']['email_verified'] && user.confirmed_at.nil?
+             end
            end
 
     if user.new_record?
