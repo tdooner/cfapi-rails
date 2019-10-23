@@ -265,6 +265,9 @@ Devise.setup do |config|
   config.omniauth :salesforce, ENV['SALESFORCE_OAUTH_KEY'], ENV['SALESFORCE_OAUTH_SECRET'],
     scope: 'profile api refresh_token'
 
+  config.omniauth :meetup, ENV['MEETUP_OAUTH_KEY'], ENV['MEETUP_OAUTH_SECRET'],
+    scope: 'ageless basic'
+
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or
   # change the failure app, you can configure them inside the config.warden block.

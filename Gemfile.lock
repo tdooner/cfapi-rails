@@ -1,3 +1,11 @@
+GIT
+  remote: https://github.com/tdooner/omniauth-meetup.git
+  revision: fb2b6acbc13b9f9e5b55752f118b397dff5a3322
+  specs:
+    omniauth-meetup (0.0.8)
+      omniauth (~> 1.0)
+      omniauth-oauth2 (~> 1.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -302,6 +310,7 @@ DEPENDENCIES
   octokit
   omniauth
   omniauth-github
+  omniauth-meetup!
   omniauth-salesforce
   pg
   pry-rails

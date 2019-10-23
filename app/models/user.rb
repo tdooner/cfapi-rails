@@ -3,7 +3,7 @@ class User < ApplicationRecord
   # :lockable, :timeoutable
   devise :database_authenticatable, :confirmable, :registerable, :recoverable,
     :rememberable, :validatable, :omniauthable, :trackable,
-    omniauth_providers: %i[github salesforce]
+    omniauth_providers: %i[github salesforce meetup]
 
   def self.find_or_create_from_omniauth(auth_payload)
     user = case auth_payload['provider']
@@ -14,6 +14,10 @@ class User < ApplicationRecord
            when 'salesforce'
              User.find_or_initialize_by(email: auth_payload['extra']['email']).tap do |user|
                user.confirmed_at = Time.now if auth_payload['extra']['email_verified'] && user.confirmed_at.nil?
+             end
+           when 'meetup'
+             User.find_or_initialize_by(email: auth_payload['info']['email']).tap do |user|
+               user.confirmed_at = Time.now if auth_payload['extra']['raw_info']['status'] == 'active' && user.confirmed_at.nil?
              end
            end
 
