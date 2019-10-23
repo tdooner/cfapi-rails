@@ -262,6 +262,9 @@ Devise.setup do |config|
   config.omniauth :github, ENV['GITHUB_OAUTH_KEY'], ENV['GITHUB_OAUTH_SECRET'],
     scope: 'user,user:email,public_repo'
 
+  config.omniauth :salesforce, ENV['SALESFORCE_OAUTH_KEY'], ENV['SALESFORCE_OAUTH_SECRET'],
+    scope: 'profile api refresh_token'
+
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or
   # change the failure app, you can configure them inside the config.warden block.
