@@ -19,6 +19,7 @@ class Brigade < ApplicationRecord
           existing.destroy
           nil
         elsif existing
+          # propagate some useful attributes onto the Brigade model itself
           existing.meetup_url ||= new_attributes[:meetup_url]
           existing.github_url ||= new_attributes[:github_url]
           existing.save
