@@ -30,5 +30,18 @@ RSpec.describe Brigade do
         expect { method }.not_to change(described_class, :count)
       end
     end
+
+    describe 'when an official brigade is no-longer-official' do
+      let!(:old_brigade) { described_class.create(name: 'Code for Somewhere') }
+
+      before do
+        api_objects[0].update(body: api_objects[0].body.merge('tags' => []))
+      end
+
+      it 'destroys the brigade' do
+        expect { method }.to change(described_class, :count).by(-1)
+        expect { old_brigade.reload }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
   end
 end
