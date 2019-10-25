@@ -4,4 +4,9 @@
       .col-4
         .card
           .card-body
-            .card-title= brigade.name
+            .card-title
+              = brigade.name
+            .card-text
+              %ul
+                - brigade.brigade_leaders.each do |l|
+                  %li= l.name

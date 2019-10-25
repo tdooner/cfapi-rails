@@ -25,18 +25,15 @@ class OAuthIdentity < ApplicationRecord
   end
 
   class Salesforce < OAuthIdentity
-    def self.client
+    def self.from_omniauth(auth_payload)
       config = Devise.omniauth_configs[:salesforce].strategy
 
-      OAuth2::Client.new(
+      client = OAuth2::Client.new(
         config['client_id'],
         config['client_secret'],
         config['client_options'].deep_symbolize_keys
       )
-    end
 
-    def self.from_omniauth(auth_payload)
-      # assume the user_id is defined by the calling method
       new(token_hash: OAuth2::AccessToken.new(
         client,
         auth_payload['credentials'].delete('token'),
@@ -45,7 +42,15 @@ class OAuthIdentity < ApplicationRecord
     end
 
     def to_token
-      OAuth2::AccessToken.from_hash(self.class.client, token_hash)
+      config = Devise.omniauth_configs[:salesforce].strategy
+      client = OAuth2::Client.new(
+        config['client_id'],
+        config['client_secret'],
+        config['client_options'].deep_symbolize_keys.merge(
+          site: token_hash['instance_url']
+        )
+      )
+      OAuth2::AccessToken.from_hash(client, token_hash)
     end
   end
 

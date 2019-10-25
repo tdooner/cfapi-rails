@@ -17,4 +17,23 @@ namespace :sync do
       )
     end
   end
+
+  desc 'sync brigade leaderships'
+  task brigade_leaders: :environment do
+    client = SalesforceBrigadeLeadersClient.new(OAuthIdentity::Salesforce.last.to_token)
+
+    ApiObject::SalesforceBrigadeLeader.transaction do
+      existing_objects = client.map do |result|
+        ApiObject::SalesforceBrigadeLeader
+          .find_or_create_by(object_id: result['Id'])
+          .tap { |r| r.update_attributes(body: result) }
+      end
+
+      ApiObject::SalesforceBrigadeLeader.where.not(id: existing_objects).destroy_all
+
+      BrigadeLeader.replace_all_from_salesforce(
+        ApiObject::SalesforceBrigadeLeader.all
+      )
+    end
+  end
 end
