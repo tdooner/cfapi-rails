@@ -76,5 +76,4 @@ class OAuthIdentity < ApplicationRecord
       OAuth2::AccessToken.from_hash(self.class.client, token_hash)
     end
   end
-
 end

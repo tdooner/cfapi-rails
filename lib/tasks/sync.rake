@@ -36,4 +36,34 @@ namespace :sync do
       )
     end
   end
+
+  desc 'sync meetup groups'
+  task meetup_groups: :environment do
+    client = MeetupGroupInfoClient.new(OAuthIdentity::Meetup.last.to_token)
+
+    ApiObject::MeetupGroup.transaction do
+      existing_objects = client.groups.map do |group|
+        ApiObject::MeetupGroup
+          .find_or_create_by(object_id: group['id'])
+          .tap { |r| r.update_attributes(body: group) }
+      end
+
+      ApiObject::MeetupGroup.where.not(id: existing_objects).destroy_all
+    end
+  end
+
+  desc 'sync meetup members'
+  task meetup_group_members: :environment do
+    client = MeetupGroupInfoClient.new(OAuthIdentity::Meetup.last.to_token)
+
+    ApiObject::MeetupGroup.transaction do
+      existing_objects = ApiObject::MeetupGroup.all.map do |group|
+        ApiObject::MeetupGroupMembers
+          .find_or_create_by(object_id: group.object_id)
+          .tap { |r| r.update_attributes(body: client.group_members(group.object_id).to_a) }
+      end
+
+      ApiObject::MeetupGroupMembers.where.not(id: existing_objects).destroy_all
+    end
+  end
 end
