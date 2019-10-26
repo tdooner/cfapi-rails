@@ -39,7 +39,7 @@ namespace :sync do
 
   desc 'sync meetup groups'
   task meetup_groups: :environment do
-    client = MeetupGroupInfoClient.new(OAuthIdentity::Meetup.last.to_token)
+    client = MeetupGroupInfoClient.new(OAuthIdentity::Meetup.admin.last.to_token)
 
     ApiObject::MeetupGroup.transaction do
       existing_objects = client.groups.map do |group|
@@ -54,7 +54,7 @@ namespace :sync do
 
   desc 'sync meetup members'
   task meetup_group_members: :environment do
-    client = MeetupGroupInfoClient.new(OAuthIdentity::Meetup.last.to_token)
+    client = MeetupGroupInfoClient.new(OAuthIdentity::Meetup.admin.last.to_token)
 
     ApiObject::MeetupGroup.transaction do
       existing_objects = ApiObject::MeetupGroup.all.map do |group|

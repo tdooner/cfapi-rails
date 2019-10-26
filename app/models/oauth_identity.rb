@@ -55,6 +55,8 @@ class OAuthIdentity < ApplicationRecord
   end
 
   class Meetup < OAuthIdentity
+    scope :admin, -> { where("token_hash::jsonb->'is_pro_admin' = ?", 'true') }
+
     def self.client
       config = Devise.omniauth_configs[:meetup].strategy
 
@@ -66,9 +68,11 @@ class OAuthIdentity < ApplicationRecord
     end
 
     def self.from_omniauth(auth_payload)
-      # assume the user_id is defined by the calling method
+      token_options = auth_payload['credentials'].dup
+      token_options.delete('expires')
+      token_options['is_pro_admin'] = auth_payload['extra']['raw_info']['is_pro_admin']
       new(
-        token_hash: OAuth2::AccessToken.new(client, auth_payload['credentials']['token']).to_hash
+        token_hash: OAuth2::AccessToken.new(client, auth_payload['credentials']['token'], token_options).to_hash
       )
     end
 

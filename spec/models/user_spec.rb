@@ -11,6 +11,9 @@ RSpec.describe User, type: :model do
           'info' => {
             'email' => 'test@example.com',
           },
+          'credentials' => {
+            'token' => 'abc123',
+          },
           'extra' => {
             'all_emails' => [
               { 'email' => 'test@example.com', 'verified' => true },
