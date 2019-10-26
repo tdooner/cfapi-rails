@@ -16,3 +16,6 @@ list your brigade's events
 
 connect slack too
   member information -> who's active?
+
+## oauth application links
+* [github production](https://github.com/settings/applications/994049)
