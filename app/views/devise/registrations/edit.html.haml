@@ -1,6 +1,17 @@
 .container
   .row
-    .col-12
+    .col-md-6.col-12
+      %h2 Linked Accounts
+      %ul
+      - resource.oauth_identities.each do |i|
+        %li
+          = i.class
+
+      = form_for(resource, as: resource_name, url: session_path(resource_name)) do |f|
+        - resource_class.omniauth_providers.each do |provider|
+          %p= link_to "Link #{OmniAuth::Utils.camelize(provider)} Account", omniauth_authorize_path(resource_name, provider)
+
+    .col-md-6.col-12
       %h2
         Edit #{resource_name.to_s.humanize}
 
