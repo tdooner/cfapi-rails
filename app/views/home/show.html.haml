@@ -5,8 +5,13 @@
         .card
           .card-body
             .card-title
-              = brigade.name
+              %h3= brigade.name
             .card-text
               %ul
                 - brigade.brigade_leaders.each do |l|
                   %li= l.name
+
+              %h4 Projects:
+              %ul
+                - brigade.brigade_projects.each do |p|
+                  %li= p.name

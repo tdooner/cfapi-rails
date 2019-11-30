@@ -66,4 +66,23 @@ namespace :sync do
       ApiObject::MeetupGroupMembers.where.not(id: existing_objects).destroy_all
     end
   end
+
+  desc 'sync brigade projects'
+  task projects: :environment do
+    client = BrigadeProjectIndexClient.new
+
+    ApiObject::BrigadeProjectIndexEntry.transaction do
+      existing_objects = client.projects_by_organization.map do |organization, projects|
+        ApiObject::BrigadeProjectIndexEntry
+          .find_or_create_by(object_id: organization['name'])
+          .tap { |o| o.update_attributes(body: { organization: organization, projects: projects }) }
+      end
+
+      ApiObject::BrigadeProjectIndexEntry.where.not(id: existing_objects).destroy_all
+    end
+
+    BrigadeProject.replace_all_from_project_database(
+      ApiObject::BrigadeProjectIndexEntry.all
+    )
+  end
 end

@@ -19,3 +19,14 @@ connect slack too
 
 ## oauth application links
 * [github production](https://github.com/settings/applications/994049)
+
+
+## todo:
+project index epic:
+* Get github username and save it somewhere
+* Fetch list of projects from github project index
+* Fetch owners for those projects
+* Create an onboarding experience for people signing in as those projects
+
+meetup data epic:
+* create a view for authenticated brigade leaders

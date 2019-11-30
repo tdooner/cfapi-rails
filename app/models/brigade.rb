@@ -1,5 +1,6 @@
 class Brigade < ApplicationRecord
   has_many :brigade_leaders
+  has_many :brigade_projects
 
   def self.replace_all_from_brigade_information(brigades)
     Brigade.transaction do
