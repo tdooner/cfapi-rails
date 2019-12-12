@@ -18,10 +18,19 @@ class SalesforceBrigadeLeadersClient
   end
 
   def each(&block)
-    # TODO: Handle pagination here
-    @oauth2_token
-      .get('/services/data/v47.0/query', params: { q: SOQL_QUERY })
-      .parsed['records']
-      .each(&block)
+    next_url = '/services/data/v47.0/query'
+    next_params = { q: SOQL_QUERY }
+
+    loop do
+      response = @oauth2_token.get(next_url, params: next_params).parsed
+
+      response['records']
+        .each(&block)
+
+      break if response['done']
+
+      next_url = response['nextRecordsUrl']
+      next_params = {}
+    end
   end
 end

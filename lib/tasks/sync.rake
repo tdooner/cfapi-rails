@@ -20,7 +20,10 @@ namespace :sync do
 
   desc 'sync brigade leaderships'
   task brigade_leaders: :environment do
-    client = SalesforceBrigadeLeadersClient.new(OAuthIdentity::Salesforce.last.to_token)
+    identity = OAuthIdentity::Salesforce.last
+    identity.refresh_if_necessary
+
+    client = SalesforceBrigadeLeadersClient.new(identity.to_token)
 
     ApiObject::SalesforceBrigadeLeader.transaction do
       existing_objects = client.map do |result|
