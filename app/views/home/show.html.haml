@@ -5,7 +5,8 @@
         .card
           .card-body
             .card-title
-              %h3= brigade.name
+              %h3
+                = link_to brigade.name, brigade
             .card-text
               %ul
                 - brigade.brigade_leaders.each do |l|

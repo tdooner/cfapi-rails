@@ -33,4 +33,16 @@ class Brigade < ApplicationRecord
       Brigade.where.not(id: official_brigades).destroy_all
     end
   end
+
+  def to_param
+    name
+  end
+
+  def meetup_urlname
+    return unless meetup_url
+
+    URI(meetup_url)
+      .path
+      .gsub(/^\/|\/$/, '') # "/Code-for-Foo/" => "Code-for-Foo"
+  end
 end

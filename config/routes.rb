@@ -4,5 +4,6 @@ Rails.application.routes.draw do
     sessions: 'users/sessions',
   }
 
+  resources :brigade, only: %i[show]
   root to: 'home#show'
 end

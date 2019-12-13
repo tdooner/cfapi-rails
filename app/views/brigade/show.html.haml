@@ -1,0 +1,34 @@
+.container
+  .row
+    .col-12
+      %h1= @brigade.name
+
+      - if @meetup_page
+        - details = @meetup_page.body
+
+        %h2 Meetup Details
+        %ul
+          %li
+            %strong Next Event:
+            = Time.at(details['next_event'] / 1000)
+          %li
+            %strong Last Event:
+            = Time.at(details['last_event'] / 1000)
+          %li
+            %strong Organizers:
+            = details['organizers'].map { |o| o['name'] }.join(', ')
+          %li
+            %strong Total RSVPs:
+            = details['past_rsvps']
+          %li
+            %strong Repeat RSVPers:
+            = details['repeat_rsvpers']
+          %li
+            %strong Past Events:
+            = details['past_events']
+          %li
+            %strong Member Count:
+            = details['member_count']
+          %li
+            %strong Upcoming Events:
+            = details['upcoming_events']
