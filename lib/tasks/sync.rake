@@ -88,4 +88,19 @@ namespace :sync do
       ApiObject::BrigadeProjectIndexEntry.all
     )
   end
+
+  desc 'sync salesforce accounts'
+  task salesforce_accounts: :environment do
+    identity = OAuthIdentity::Salesforce.last
+    identity.refresh_if_necessary
+    client = SalesforceAdminUsersClient.new(identity.to_token)
+
+    User.transaction do
+      User.update_all(has_salesforce_account: false)
+
+      client.each do |record|
+        User.where(email: record['Email']).update_all(has_salesforce_account: true)
+      end
+    end
+  end
 end
