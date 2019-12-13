@@ -10,10 +10,10 @@
         %ul
           %li
             %strong Next Event:
-            = Time.at(details['next_event'] / 1000)
+            = Time.at(details['next_event'] / 1000) if details['next_event']
           %li
             %strong Last Event:
-            = Time.at(details['last_event'] / 1000)
+            = Time.at(details['last_event'] / 1000) if details['last_event']
           %li
             %strong Organizers:
             = details['organizers'].map { |o| o['name'] }.join(', ')
