@@ -35,7 +35,10 @@
               %a.nav-link.disabled{"aria-disabled" => "true", :href => "#", :tabindex => "-1"} Disabled
           %span.navbar-nav
             - if current_user
-              = link_to current_user.email, edit_user_registration_path, class: 'nav-link'
+              = link_to edit_user_registration_path, class: 'nav-link' do
+                = current_user.email
+                - if current_user.admin?
+                  .badge.badge-pill.badge-primary Admin
               = link_to 'Log Out', destroy_user_session_path, method: :delete, class: 'nav-link'
             - else
               = link_to 'Log In', new_user_session_path, class: 'nav-link'

@@ -44,4 +44,8 @@ class User < ApplicationRecord
     user.save
     user
   end
+
+  def admin?
+    has_salesforce_account
+  end
 end
