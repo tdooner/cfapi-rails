@@ -23,16 +23,30 @@ class User < ApplicationRecord
   def self.find_or_create_from_omniauth(auth_payload)
     user = case auth_payload['provider']
            when 'github'
-             User.find_or_initialize_by(email: auth_payload['info']['email']).tap do |user|
-               user.confirmed_at = Time.now if auth_payload['extra']['all_emails'].find { |e| e['email'] == user.email && e['verified'] } && user.confirmed_at.nil?
+             if (identity = OAuthIdentity::Github.find_by(service_user_id: auth_payload['uid']))
+               identity.user
+             else
+               User.find_or_initialize_by(email: auth_payload['info']['email']).tap do |user|
+                 user.confirmed_at = Time.now if auth_payload['extra']['all_emails'].find { |e| e['email'] == user.email && e['verified'] } && user.confirmed_at.nil?
+               end
              end
            when 'salesforce'
-             User.find_or_initialize_by(email: auth_payload['extra']['email']).tap do |user|
-               user.confirmed_at = Time.now if auth_payload['extra']['email_verified'] && user.confirmed_at.nil?
+             # TODO: DRY this up and test Salesforce / Meetup
+             if (identity = OAuthIdentity::Salesforce.find_by(service_user_id: auth_payload['uid']))
+               identity.user
+             else
+               User.find_or_initialize_by(email: auth_payload['extra']['email']).tap do |user|
+                 user.confirmed_at = Time.now if auth_payload['extra']['email_verified'] && user.confirmed_at.nil?
+               end
              end
            when 'meetup'
-             User.find_or_initialize_by(email: auth_payload['info']['email']).tap do |user|
-               user.confirmed_at = Time.now if auth_payload['extra']['raw_info']['status'] == 'active' && user.confirmed_at.nil?
+             # TODO: DRY this up and test Salesforce / Meetup
+             if (identity = OAuthIdentity::Meetup.find_by(service_user_id: auth_payload['uid']))
+               identity.user
+             else
+               User.find_or_initialize_by(email: auth_payload['info']['email']).tap do |user|
+                 user.confirmed_at = Time.now if auth_payload['extra']['raw_info']['status'] == 'active' && user.confirmed_at.nil?
+               end
              end
            end
 

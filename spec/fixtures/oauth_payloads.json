@@ -1,0 +1,87 @@
+{
+  "meetup": {
+    "provider": "meetup",
+    "uid": 123456789,
+    "info": {
+      "id": 123456789,
+      "email": "user@example.com",
+      "name": "Example User",
+      "photo_url": "https://secure.meetupstatic.com/photos/member/e/9/2/4/member_256259684.jpeg",
+      "image": "https://secure.meetupstatic.com/photos/member/e/9/2/4/member_256259684.jpeg",
+      "urls": {
+        "public_profile": null
+      },
+      "description": null,
+      "location": "San Francisco, CA, us"
+    },
+    "credentials": {
+      "token": "token123",
+      "refresh_token": "refresh123",
+      "expires_at": 1648858874,
+      "expires": true
+    },
+    "extra": {
+      "raw_info": {
+        "id": 123456789,
+        "name": "Example User",
+        "email": "user@example.com",
+        "status": "active",
+        "joined": 1435705602000
+      }
+    }
+  },
+  "github": {
+    "provider": "github",
+    "uid": "123456",
+    "info": {
+      "nickname": "exampleuser",
+      "email": "user@example.com",
+      "name": "Example User",
+      "image": "https://foo.com/bar.jpg",
+      "urls": {
+        "GitHub": "https://github.com/exampleuser",
+        "Blog": "http://blog.example.com"
+      }
+    },
+    "credentials": {
+      "token": "token123",
+      "expires": false
+    },
+    "extra": {
+      "raw_info": {
+        "login": "exampleuser",
+        "id": 123456
+      },
+      "all_emails": [
+        {
+          "email": "user@example.com",
+          "primary": true,
+          "verified": true,
+          "visibility": "public"
+        }
+      ]
+    }
+  },
+  "salesforce": {
+    "provider": "salesforce",
+    "uid": "https://login.salesforce.com/id/000000000000000000/111111111111111111",
+    "info": {
+      "name": "Example User",
+      "email": "user@example.com",
+      "nickname": "uexample",
+      "first_name": "Example",
+      "last_name": "User"
+    },
+    "credentials": {
+      "token": "token123",
+      "instance_url": "https://na00.salesforce.com",
+      "refresh_token": "refresh123",
+      "expires_at": 1576282432
+    },
+    "extra": {
+      "id": "https://login.salesforce.com/id/000000000000000000/111111111111111111",
+      "asserted_user": true,
+      "user_id": "111111111111111111"
+    }
+  }
+}
