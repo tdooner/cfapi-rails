@@ -12,6 +12,7 @@ RSpec.describe OAuthIdentity do # rubocop:disable RSpec/FilePath
       expect(identity.token_hash).to include('expires_at' => 1576282432)
       expect(identity.token_hash).not_to include('expires' => false)
       expect(identity.service_user_id).to eq(auth_payload['uid'])
+      expect(identity.service_username).to eq('user@example.com')
     end
   end
 
@@ -23,6 +24,7 @@ RSpec.describe OAuthIdentity do # rubocop:disable RSpec/FilePath
     it 'returns a properly configured OAuthIdentity' do
       expect(identity.token_hash).to include('access_token' => 'token123')
       expect(identity.service_user_id).to eq('123456')
+      expect(identity.service_username).to eq('exampleuser')
     end
   end
 
@@ -35,6 +37,7 @@ RSpec.describe OAuthIdentity do # rubocop:disable RSpec/FilePath
       expect(identity.token_hash).to include('access_token' => 'token123')
       expect(identity.token_hash).to include('refresh_token' => 'refresh123')
       expect(identity.service_user_id).to eq('123456789')
+      expect(identity.service_username).to eq('user@example.com')
     end
   end
 end

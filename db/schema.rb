@@ -54,7 +54,8 @@ ActiveRecord::Schema.define(version: 2019_12_13_225944) do
     t.json "token_hash", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "service_user_id"
+    t.string "service_user_id", null: false
+    t.string "service_username", null: false
     t.index ["type", "user_id"], name: "index_oauth_identities_on_type_and_user_id", unique: true
     t.index ["user_id"], name: "index_oauth_identities_on_user_id"
   end

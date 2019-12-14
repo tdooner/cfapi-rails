@@ -15,6 +15,7 @@ class OAuthIdentity < ApplicationRecord
     def self.from_omniauth(auth_payload)
       identity = find_or_initialize_by(service_user_id: auth_payload['uid'])
       identity.assign_attributes(
+        service_username: auth_payload['info']['nickname'],
         token_hash: OAuth2::AccessToken.new(client, auth_payload['credentials']['token']).to_hash
       )
       identity
@@ -37,6 +38,7 @@ class OAuthIdentity < ApplicationRecord
 
       identity = find_or_initialize_by(service_user_id: auth_payload['uid'])
       identity.assign_attributes(
+        service_username: auth_payload['info']['email'],
         token_hash: OAuth2::AccessToken.new(
           client,
           auth_payload['credentials'].delete('token'),
@@ -103,6 +105,7 @@ class OAuthIdentity < ApplicationRecord
 
       identity = find_or_initialize_by(service_user_id: auth_payload['uid'])
       identity.assign_attributes(
+        service_username: auth_payload['info']['email'],
         token_hash: OAuth2::AccessToken.new(
           client,
           auth_payload['credentials']['token'],

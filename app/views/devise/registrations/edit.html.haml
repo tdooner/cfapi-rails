@@ -5,7 +5,9 @@
       %ul
       - resource.oauth_identities.each do |i|
         %li
-          = i.class
+          = succeed ':' do
+            %strong= i.class.name.demodulize
+          #{i.service_username}
 
       = form_for(resource, as: resource_name, url: session_path(resource_name)) do |f|
         - resource_class.omniauth_providers.each do |provider|
