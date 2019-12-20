@@ -10,7 +10,7 @@
         %ul
           %li
             %strong Last Updated:
-            %span{ title: @meetup_page.updated_at }= time_ago_in_words @meetup_page.updated_at
+            %span{ title: @meetup_page.updated_at }= distance_of_time_in_words @meetup_page.updated_at
           %li
             %strong Next Event:
             = Time.at(details['next_event'] / 1000) if details['next_event']
