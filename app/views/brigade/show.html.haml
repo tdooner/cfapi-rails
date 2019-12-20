@@ -9,6 +9,9 @@
         %h2 Meetup Details
         %ul
           %li
+            %strong Last Updated:
+            %span{ title: @meetup_page.updated_at }= time_ago_in_words @meetup_page.updated_at
+          %li
             %strong Next Event:
             = Time.at(details['next_event'] / 1000) if details['next_event']
           %li
@@ -32,3 +35,6 @@
           %li
             %strong Upcoming Events:
             = details['upcoming_events']
+
+      - else
+        %p No Meetup Metrics (#{link_to @brigade.meetup_url, @brigade.meetup_url})
