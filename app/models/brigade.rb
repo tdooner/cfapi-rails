@@ -1,6 +1,25 @@
 class Brigade < ApplicationRecord
   has_many :brigade_leaders
   has_many :brigade_projects
+  has_many :metric_snapshots, as: :related_object
+
+  cattr_accessor :metrics
+
+  def self.metric(name, blk)
+    Brigade.metrics ||= []
+    Brigade.metrics << [name, blk]
+  end
+
+  def calculate_metrics
+    Brigade.metrics.map { |name, blk| [name, instance_exec(&blk)] }
+  end
+
+  metric :meetup_past_rsvps, -> { meetup&.body&.fetch('past_rsvps', nil) }
+  metric :meetup_repeat_rsvpers, -> { meetup&.body&.fetch('repeat_rsvpers', nil) }
+  metric :meetup_past_events, -> { meetup&.body&.fetch('past_events', nil) }
+  metric :meetup_member_count, -> { meetup&.body&.fetch('member_count', nil) }
+  metric :meetup_upcoming_events, -> { meetup&.body&.fetch('upcoming_events', nil) }
+  metric :meetup_organizer_count, -> { meetup&.body&.fetch('organizers', [])&.count }
 
   def self.replace_all_from_brigade_information(brigades)
     Brigade.transaction do
@@ -44,5 +63,11 @@ class Brigade < ApplicationRecord
     URI(meetup_url)
       .path
       .gsub(/^\/|\/$/, '') # "/Code-for-Foo/" => "Code-for-Foo"
+  end
+
+  def meetup
+    return unless meetup_urlname
+
+    @meetup ||= ApiObject::MeetupGroup.with_meetup_urlname(meetup_urlname).first
   end
 end

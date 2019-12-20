@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_12_13_225944) do
+ActiveRecord::Schema.define(version: 2019_12_20_033605) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -46,6 +46,16 @@ ActiveRecord::Schema.define(version: 2019_12_13_225944) do
     t.datetime "updated_at", null: false
     t.string "github_url"
     t.string "meetup_url"
+  end
+
+  create_table "metric_snapshots", force: :cascade do |t|
+    t.string "metric_name"
+    t.decimal "metric_value"
+    t.datetime "created_at"
+    t.string "related_object_type"
+    t.bigint "related_object_id"
+    t.index ["metric_name", "created_at"], name: "index_metric_snapshots_on_metric_name_and_created_at"
+    t.index ["related_object_type", "related_object_id"], name: "idx_metric_snapshots_related_object"
   end
 
   create_table "oauth_identities", force: :cascade do |t|
