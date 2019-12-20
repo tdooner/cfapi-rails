@@ -1,0 +1,28 @@
+{
+  "name": "Code for America Network",
+  "description": "The organizing portal for the Code for America Network",
+  "keywords": [],
+  "website": "https://brigade.network/",
+  "repository": "https://github.com/tdooner/cfapi-rails",
+  "scripts": {
+    "postdeploy": "bin/rails db:migrate"
+  },
+  "env": {
+    "SECRET_TOKEN": {
+      "description": "A secret key for verifying the integrity of signed cookies.",
+      "generator": "secret"
+    }
+  },
+  "formation": {},
+  "image": "heroku/ruby",
+  "addons": [
+    {
+      "plan": "heroku-postgresql",
+      "options": {
+        "version": "9.5"
+      }
+    }
+  ],
+  "buildpacks": [],
+  "environments": {}
+}
