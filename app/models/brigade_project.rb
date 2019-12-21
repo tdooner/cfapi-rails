@@ -26,7 +26,7 @@ class BrigadeProject < ApplicationRecord
         next unless brigade
 
         projects.map do |project|
-          inferred_project_name = URI(project['code_url']).path.split('/').last
+          inferred_project_name = URI(project['code_url']).path.split('/').last if project['code_url']
           project_name = project['name'] || inferred_project_name
 
           brigade
