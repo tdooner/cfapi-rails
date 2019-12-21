@@ -1,4 +1,4 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: 'brigade-info@codeforamerica.org'
+  default from: 'noreply@brigade.network'
   layout 'mailer'
 end
