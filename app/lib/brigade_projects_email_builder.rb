@@ -17,6 +17,12 @@ class BrigadeProjectsEmailBuilder
     ).deliver_now
   end
 
+  def changes?
+    @projects_created.any? ||
+      @projects_changed.any? ||
+      @projects_destroyed.any?
+  end
+
   def brigade_project_created(attributes)
     @projects_created << attributes
   end

@@ -95,7 +95,7 @@ namespace :sync do
         ApiObject::BrigadeProjectIndexEntry.all
       )
     end
-    email_builder.send_email
+    email_builder.send_email if email_builder.changes?
   end
 
   desc 'sync salesforce accounts'
