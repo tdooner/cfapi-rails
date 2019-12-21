@@ -21,7 +21,10 @@ RSpec.describe BrigadeProjectsMailer do
     let(:changed_projects) { [[project_changedbot.attributes, project_changedbot.previous_changes]] }
 
     it 'renders the body' do
-      expect(mail.body.encoded).to include('Hello')
+      expect(mail.body.encoded).to include(brigade.name)
+      expect(mail.body.encoded).to include(project_createbot.name)
+      expect(mail.body.encoded).to include(project_destroybot.name)
+      expect(mail.body.encoded).to include(project_changedbot.name)
     end
   end
 end
