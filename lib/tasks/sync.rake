@@ -8,6 +8,7 @@ namespace :sync do
         ApiObject::BrigadeInformation
           .find_or_initialize_by(object_id: brigade_info_hash['name'])
           .tap { |r| r.update_attributes(body: brigade_info_hash) }
+          .tap(&:touch)
       end
 
       ApiObject::BrigadeInformation.where.not(id: existing_objects).destroy_all
@@ -30,6 +31,7 @@ namespace :sync do
         ApiObject::SalesforceBrigadeLeader
           .find_or_create_by(object_id: result['Id'])
           .tap { |r| r.update_attributes(body: result) }
+          .tap(&:touch)
       end
 
       ApiObject::SalesforceBrigadeLeader.where.not(id: existing_objects).destroy_all
@@ -49,6 +51,7 @@ namespace :sync do
         ApiObject::MeetupGroup
           .find_or_create_by(object_id: group['id'])
           .tap { |r| r.update_attributes(body: group) }
+          .tap(&:touch)
       end
 
       ApiObject::MeetupGroup.where.not(id: existing_objects).destroy_all
@@ -64,6 +67,7 @@ namespace :sync do
         ApiObject::MeetupGroupMembers
           .find_or_create_by(object_id: group.object_id)
           .tap { |r| r.update_attributes(body: client.group_members(group.object_id).to_a) }
+          .tap(&:touch)
       end
 
       ApiObject::MeetupGroupMembers.where.not(id: existing_objects).destroy_all
@@ -79,6 +83,7 @@ namespace :sync do
         ApiObject::BrigadeProjectIndexEntry
           .find_or_create_by(object_id: organization['name'])
           .tap { |o| o.update_attributes(body: { organization: organization, projects: projects }) }
+          .tap(&:touch)
       end
 
       ApiObject::BrigadeProjectIndexEntry.where.not(id: existing_objects).destroy_all
