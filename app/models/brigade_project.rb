@@ -26,9 +26,12 @@ class BrigadeProject < ApplicationRecord
         next unless brigade
 
         projects.map do |project|
+          inferred_project_name = URI(project['code_url']).path.split('/').last
+          project_name = project['name'] || inferred_project_name
+
           brigade
             .brigade_projects
-            .find_or_initialize_by(name: project['name'])
+            .find_or_initialize_by(name: project_name)
             .tap { |p| p.update_attributes(link_url: project['link_url'], code_url: project['code_url']) }
         end
       end

@@ -15,14 +15,14 @@ RSpec.describe BrigadeProject do
             {
               'name' => 'Courtbot',
               'link_url' => 'http://example.com/courtbot',
-              'code_url' => 'http://example.com/courtbot-code',
+              'code_url' => 'http://example.com/org/courtbot',
             },
           ],
         }
       )
     end
 
-    context 'with a new BrigadeProject' do
+    context 'with a new project ApiObject' do
       let(:api_objects) { [valid_api_object] }
 
       it 'creates a new BrigadeProject' do
@@ -31,11 +31,27 @@ RSpec.describe BrigadeProject do
         created = described_class.last
         expect(created.name).to eq('Courtbot')
         expect(created.link_url).to eq('http://example.com/courtbot')
-        expect(created.code_url).to eq('http://example.com/courtbot-code')
+        expect(created.code_url).to eq('http://example.com/org/courtbot')
       end
 
       it 'broadcasts a "brigade_project_created" event' do
         expect { subject }.to broadcast(:brigade_project_created)
+      end
+    end
+
+    context 'with a new project ApiObject with no project "name"' do
+      let(:api_objects) { [api_object_with_no_project_name] }
+      let(:api_object_with_no_project_name) do
+        valid_api_object.dup.tap do |api_object|
+          api_object.body['projects'][0].delete('name')
+        end
+      end
+
+      it 'infers the name from the end of the code_url' do
+        expect { subject }.to change(described_class, :count).by(1)
+
+        created = described_class.last
+        expect(created.name).to eq('courtbot')
       end
     end
 
@@ -71,7 +87,7 @@ RSpec.describe BrigadeProject do
       it 'updates the old BrigadeProject' do
         expect { subject }
           .to change { described_class.last.code_url }
-          .from('http://example.com/courtbot-code')
+          .from('http://example.com/org/courtbot')
           .to('http://example.com/some-other-code-url')
       end
 
