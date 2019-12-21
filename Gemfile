@@ -13,6 +13,7 @@ gem 'bundle-audit'
 gem 'devise'
 gem 'faraday-http-cache'
 gem 'haml-rails'
+gem 'mailgun-ruby'
 gem 'octokit'
 gem 'omniauth'
 gem 'omniauth-github'
@@ -27,6 +28,9 @@ gem 'sentry-raven'
 gem 'tomlrb'
 gem 'turbolinks', '~> 5'
 gem 'uglifier', '>= 1.3.0'
+gem 'wisper'
+gem 'wisper-activerecord'
+gem 'wisper-rspec', require: false
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

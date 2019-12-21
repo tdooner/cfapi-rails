@@ -48,6 +48,9 @@ Documentation:
 RSpec/ExpectActual:
   Enabled: false
 
+RSpec/NamedSubject:
+  Enabled: false
+
 Style/EmptyMethod:
   EnforcedStyle: expanded
 

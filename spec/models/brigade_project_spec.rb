@@ -33,6 +33,10 @@ RSpec.describe BrigadeProject do
         expect(created.link_url).to eq('http://example.com/courtbot')
         expect(created.code_url).to eq('http://example.com/courtbot-code')
       end
+
+      it 'broadcasts a "brigade_project_created" event' do
+        expect { subject }.to broadcast(:brigade_project_created)
+      end
     end
 
     context 'with an old BrigadeProject' do
@@ -43,6 +47,10 @@ RSpec.describe BrigadeProject do
         expect(old_brigade_project).to be_persisted
         subject
         expect { old_brigade_project.reload }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+
+      it 'broadcasts a "brigade_project_destroyed" event' do
+        expect { subject }.to broadcast(:brigade_project_destroyed)
       end
     end
 
@@ -65,6 +73,10 @@ RSpec.describe BrigadeProject do
           .to change { described_class.last.code_url }
           .from('http://example.com/courtbot-code')
           .to('http://example.com/some-other-code-url')
+      end
+
+      it 'broadcasts a "brigade_project_changed" event' do
+        expect { subject }.to broadcast(:brigade_project_changed)
       end
     end
   end

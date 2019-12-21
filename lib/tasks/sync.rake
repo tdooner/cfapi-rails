@@ -89,9 +89,13 @@ namespace :sync do
       ApiObject::BrigadeProjectIndexEntry.where.not(id: existing_objects).destroy_all
     end
 
-    BrigadeProject.replace_all_from_project_database(
-      ApiObject::BrigadeProjectIndexEntry.all
-    )
+    email_builder = BrigadeProjectsEmailBuilder.new
+    email_builder.capture_events do
+      BrigadeProject.replace_all_from_project_database(
+        ApiObject::BrigadeProjectIndexEntry.all
+      )
+    end
+    email_builder.send_email
   end
 
   desc 'sync salesforce accounts'

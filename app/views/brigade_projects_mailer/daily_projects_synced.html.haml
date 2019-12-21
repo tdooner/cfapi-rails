@@ -1,0 +1,46 @@
+%h2 Created Projects
+%ul
+- @created_projects.group_by { |p| p['brigade_id'] }.each do |brigade_id, projects|
+  - brigade = Brigade.find(brigade_id)
+  - projects.each do |attributes|
+    - project = BrigadeProject.new(attributes)
+    %li
+      %strong= brigade.name
+      –
+      = project.name
+      - if project.link_url
+        = link_to '(link)', project.link_url, target: '_blank'
+      - if project.code_url
+        = link_to '(code)', project.code_url, target: '_blank'
+
+%h2 Destroyed Projects
+- @destroyed_projects.group_by { |p| p['brigade_id'] }.each do |brigade_id, projects|
+  - brigade = Brigade.find(brigade_id)
+  - projects.each do |attributes|
+    - project = BrigadeProject.new(attributes)
+    %li
+      %strong= brigade.name
+      –
+      = project.name
+      - if project.link_url
+        = link_to '(link)', project.link_url, target: '_blank'
+      - if project.code_url
+        = link_to '(code)', project.code_url, target: '_blank'
+
+%h2 Updated Projects
+- @changed_projects.group_by { |attr, _| attr['brigade_id'] }.each do |brigade_id, projects|
+  - brigade = Brigade.find(brigade_id)
+  - projects.each do |attributes, changes|
+    - project = BrigadeProject.new(attributes)
+    %li
+      %strong= brigade.name
+      –
+      = project.name
+      - if project.link_url
+        = link_to '(link)', project.link_url, target: '_blank'
+      - if changes['link_url']
+        (link changed: #{changes['link_url'][0].inspect} to #{changes['link_url'][1].inspect})
+      - if project.code_url
+        = link_to '(code)', project.code_url, target: '_blank'
+      - if changes['code_url']
+        (link changed: #{changes['code_url'][0].inspect} to #{changes['code_url'][1].inspect})
