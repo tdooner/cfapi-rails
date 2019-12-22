@@ -12,6 +12,7 @@ gem 'bootsnap', '>= 1.1.0', require: false
 gem 'bundle-audit'
 gem 'devise'
 gem 'faraday-http-cache'
+gem 'friendly_id'
 gem 'haml-rails'
 gem 'mailgun-ruby'
 gem 'octokit'

@@ -1,9 +1,13 @@
 class Brigade < ApplicationRecord
+  extend FriendlyId
+
   has_many :brigade_leaders
   has_many :brigade_projects
   has_many :metric_snapshots, as: :related_object
 
   cattr_accessor :metrics
+
+  friendly_id :name, use: :slugged
 
   def self.metric(name, blk)
     Brigade.metrics ||= []
@@ -51,10 +55,6 @@ class Brigade < ApplicationRecord
 
       Brigade.where.not(id: official_brigades).destroy_all
     end
-  end
-
-  def to_param
-    name
   end
 
   def meetup_urlname
