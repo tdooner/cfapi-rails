@@ -3,6 +3,22 @@
     .col-12
       %h1= @brigade.name
 
+      - if @projects.any?
+        %h2 Brigade Projects
+
+        %ul.list-group
+          - @projects.sort_by { |p| p.name }.each do |project|
+            %li.list-group-item
+              %strong= project.name
+              - if project.link_url
+                = link_to project.link_url, target: '_blank' do
+                  = project.link_url
+                  %i.fas.fa-external-link-alt
+              - if project.code_url
+                = link_to project.code_url, target: '_blank' do
+                  %i.fab.fa-github
+
+
       - if @meetup_page
         - details = @meetup_page.body
 
