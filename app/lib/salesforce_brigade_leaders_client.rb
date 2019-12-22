@@ -7,6 +7,11 @@ class SalesforceBrigadeLeadersClient
       npe5__Contact__r.Id,
       npe5__Contact__r.Name,
       npe5__Contact__r.Email,
+      npe5__Contact__r.Brigade_Email__c,
+      npe5__Contact__r.npe01__AlternateEmail__c,
+      npe5__Contact__r.npe01__HomeEmail__c,
+      npe5__Contact__r.npe01__PreferredEmail__c,
+      npe5__Contact__r.npe01__WorkEmail__c,
       npe5__Organization__r.Name
     FROM npe5__Affiliation__c
     WHERE Captain_Co_Captain__c = TRUE
