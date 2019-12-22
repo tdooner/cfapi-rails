@@ -1,5 +1,4 @@
 class BrigadeProject < ApplicationRecord
-  include Wisper::Publisher
   include BroadcastChanges
 
   belongs_to :brigade

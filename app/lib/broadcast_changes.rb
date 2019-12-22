@@ -16,6 +16,8 @@ module BroadcastChanges
   extend ActiveSupport::Concern
 
   included do
+    include Wisper::Publisher
+
     after_commit :broadcast_updates
   end
 
