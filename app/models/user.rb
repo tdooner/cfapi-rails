@@ -5,6 +5,7 @@ class User < ApplicationRecord
     :rememberable, :validatable, :omniauthable, :trackable,
     omniauth_providers: %i[github salesforce meetup]
   has_many :oauth_identities
+  has_many :brigade_leaders, primary_key: :email, foreign_key: :email
 
   def associate_oauth_identity(auth_payload)
     case auth_payload['provider']
