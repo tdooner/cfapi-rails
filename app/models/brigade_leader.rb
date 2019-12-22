@@ -1,4 +1,6 @@
 class BrigadeLeader < ApplicationRecord
+  include BroadcastChanges
+
   belongs_to :brigade
 
   def self.replace_all_from_salesforce(api_objects)

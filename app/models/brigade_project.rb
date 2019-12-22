@@ -1,19 +1,8 @@
 class BrigadeProject < ApplicationRecord
   include Wisper::Publisher
+  include BroadcastChanges
 
   belongs_to :brigade
-
-  after_commit :publish_updates
-
-  def publish_updates
-    if id_previously_changed?
-      broadcast(:brigade_project_created, attributes)
-    elsif destroyed?
-      broadcast(:brigade_project_destroyed, attributes)
-    elsif previous_changes.any?
-      broadcast(:brigade_project_changed, attributes, previous_changes)
-    end
-  end
 
   def self.replace_all_from_project_database(api_objects)
     BrigadeProject.transaction do
