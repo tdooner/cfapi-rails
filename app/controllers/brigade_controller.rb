@@ -5,6 +5,7 @@ class BrigadeController < ApplicationController
   def show
     @meetup_page = @brigade.meetup
     @projects = @brigade.brigade_projects
+    @stats = @brigade.metric_snapshots
   end
 
   def edit

@@ -10,6 +10,7 @@ gem 'rails', '~> 5.2.1'
 # Application dependencies
 gem 'bootsnap', '>= 1.1.0', require: false
 gem 'bundle-audit'
+gem 'chartkick'
 gem 'devise'
 gem 'faraday-http-cache'
 gem 'friendly_id'

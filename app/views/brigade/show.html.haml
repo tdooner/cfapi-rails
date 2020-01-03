@@ -5,6 +5,10 @@
       - if current_user&.can_manage_brigade?(@brigade)
         = link_to 'Edit', edit_brigade_path(@brigade)
 
+      %h2 Members
+      - members_over_time = Hash[@stats.find_all { |m| m.metric_name == "meetup_member_count" }.map { |m| [m.created_at.to_date, m.metric_value] }]
+      = line_chart members_over_time, min: members_over_time.values.min, max: members_over_time.values.max
+
       - if @projects.any?
         %h2 Brigade Projects
 
