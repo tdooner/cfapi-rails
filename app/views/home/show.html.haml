@@ -1,18 +1,11 @@
 .container
   .row
-    - @brigades.each do |brigade|
-      .col-4
-        .card
-          .card-body
-            .card-title
-              %h3
-                = link_to brigade.name, brigade
-            .card-text
-              %ul
-                - brigade.brigade_leaders.each do |l|
-                  %li= l.name
-
-              %h4 Projects:
-              %ul
-                - brigade.brigade_projects.each do |p|
-                  %li= p.name
+    .list-group
+      - @brigades.each do |brigade|
+        = link_to brigade do
+          .list-group-item
+            %strong= brigade.name
+            .badge.badge-secondary
+              = pluralize brigade.brigade_leaders.count, 'Leader'
+            .badge.badge-secondary
+              = pluralize brigade.brigade_projects.count, 'Project'
