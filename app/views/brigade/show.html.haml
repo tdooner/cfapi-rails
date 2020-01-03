@@ -2,6 +2,8 @@
   .row
     .col-12
       %h1= @brigade.name
+      - if current_user&.can_manage_brigade?(@brigade)
+        = link_to 'Edit', edit_brigade_path(@brigade)
 
       - if @projects.any?
         %h2 Brigade Projects

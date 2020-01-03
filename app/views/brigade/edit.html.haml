@@ -1,0 +1,25 @@
+.container
+  .row
+    .col-12
+      %h1 Edit #{@brigade.name}
+
+  .row
+    .col-4
+      %h2 Brigade Leaders
+
+      %ul
+      - @brigade.brigade_leaders.each do |l|
+        %li= l.name
+
+      %h3 Add New:
+      = form_for BrigadeLeader.new(brigade: @brigade), url: add_leader_brigade_path(@brigade) do |f|
+        .form-group
+          = f.label :name
+          = f.text_field :name, class: 'form-control'
+
+        .form-group
+          = f.label :email
+          = f.text_field :email, type: :email, class: 'form-control'
+
+        .actions
+          = f.submit "Add Brigade Leader", class: 'btn btn-primary'

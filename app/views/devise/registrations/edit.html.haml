@@ -3,6 +3,11 @@
     .col-md-6.col-12
       %h2 Linked Accounts
       %ul
+      - current_user.brigade_leaders.each do |l|
+        %li
+          %strong Brigade Leader:
+          = link_to l.brigade.name, l.brigade
+
       - resource.oauth_identities.each do |i|
         %li
           = succeed ':' do

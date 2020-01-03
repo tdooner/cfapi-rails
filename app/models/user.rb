@@ -63,4 +63,8 @@ class User < ApplicationRecord
   def admin?
     has_salesforce_account
   end
+
+  def can_manage_brigade?(brigade)
+    admin? || brigade_leaders.detect { |l| l.brigade_id == brigade.id }
+  end
 end
