@@ -26,6 +26,8 @@
               - if project.code_url
                 = link_to project.code_url, target: '_blank' do
                   %i.fab.fa-github
+              - if project.last_pushed_at
+                Last updated: #{distance_of_time_in_words_to_now project.last_pushed_at}
 
 
       - if @meetup_page
