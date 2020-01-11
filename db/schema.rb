@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_12_22_225626) do
+ActiveRecord::Schema.define(version: 2020_01_11_214230) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -37,6 +37,8 @@ ActiveRecord::Schema.define(version: 2019_12_22_225626) do
     t.string "code_url"
     t.string "link_url"
     t.bigint "brigade_id"
+    t.datetime "last_modified_at"
+    t.datetime "last_pushed_at"
     t.index ["brigade_id"], name: "index_brigade_projects_on_brigade_id"
   end
 

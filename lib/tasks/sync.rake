@@ -98,6 +98,34 @@ namespace :sync do
     email_builder.send_email if email_builder.changes?
   end
 
+  desc 'sync brigade project githubs'
+  task project_github: :environment do
+    github_identity = OAuthIdentity::Github.last.to_token
+    client = Octokit::Client.new(access_token: github_identity.token)
+    projects = BrigadeProject.where('code_url LIKE ?', '%github.com%')
+    projects.each_with_index do |project, i|
+      conditional_headers = {}
+
+      if project.last_modified_at
+        Rails.logger.info "Conditionally requesting #{project.code_url} (#{i}/#{projects.length})..."
+        conditional_headers['If-Modified-Since'] = project.last_modified_at.rfc2822
+      else
+        Rails.logger.info "Loading project details for #{project.code_url} (#{i}/#{projects.length})..."
+      end
+
+      repo = client.repo(URI(project.code_url).path[1..-1], headers: conditional_headers)
+      response = client.last_response
+      Rails.logger.info "  Got status: #{response.status}"
+      Rails.logger.info "  Rate limit: #{response.headers['X-Ratelimit-Remaining']} Remaining"
+      next if response.status.to_i == 304
+
+      project.update_attributes(
+        last_modified_at: response.headers[:last_modified],
+        last_pushed_at: repo.pushed_at
+      )
+    end
+  end
+
   desc 'sync salesforce accounts'
   task salesforce_accounts: :environment do
     identity = OAuthIdentity::Salesforce.last
