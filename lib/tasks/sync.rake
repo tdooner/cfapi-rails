@@ -113,7 +113,12 @@ namespace :sync do
         Rails.logger.info "Loading project details for #{project.code_url} (#{i}/#{projects.length})..."
       end
 
-      repo = client.repo(URI(project.code_url).path[1..-1], headers: conditional_headers)
+      begin
+        repo = client.repo(URI(project.code_url).path[1..-1], headers: conditional_headers)
+      rescue => ex
+        Rails.logger.error "  Error Fetching: #{ex.message}"
+        next
+      end
       response = client.last_response
       Rails.logger.info "  Got status: #{response.status}"
       Rails.logger.info "  Rate limit: #{response.headers['X-Ratelimit-Remaining']} Remaining"
