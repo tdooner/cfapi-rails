@@ -196,7 +196,7 @@ namespace :sync do
 
         ApiObject::GithubRepoDetails
           .find_or_create_by(object_id: project.code_url)
-          .tap { |o| o.update_attributes(body: body) }
+          .tap { |o| o.update_attributes(body: body) if body.present? }
           .tap(&:touch)
       end.compact
 
