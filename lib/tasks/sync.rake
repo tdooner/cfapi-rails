@@ -132,7 +132,7 @@ namespace :sync do
             conditional_headers['If-Modified-Since'] = Time.parse(existing.body['updated_at']).rfc2822
           end
 
-          Rails.logger.info "Loading project details for #{project.code_url} (#{i}/#{projects.length})..."
+          Rails.logger.info "Loading repository metadata for #{project.code_url} (#{i}/#{projects.length})..."
           begin
             repo = client.repo(URI(project.code_url).path[1..-1], headers: conditional_headers)
           rescue => ex
@@ -156,6 +156,49 @@ namespace :sync do
       end.compact
 
       ApiObject::GithubRepo.where.not(id: existing_objects).destroy_all
+    end
+  end
+
+  desc 'sync brigade project github details'
+  task project_github_details: :environment do
+    github_identity = OAuthIdentity::Github.last.to_token
+    client = Octokit::Client.new(access_token: github_identity.token)
+    ratelimit_remaining = client.rate_limit.remaining
+
+    ApiObject::GithubRepoDetails.transaction do
+      # order projecs so ones with stub project details will come first
+      projects =
+        BrigadeProject
+        .joins("LEFT OUTER JOIN api_objects ON api_objects.object_id = brigade_projects.code_url AND api_objects.type = 'ApiObject::GithubRepoDetails'")
+        .where('code_url LIKE ?', '%github.com%')
+        .order('api_objects.id DESC')
+
+      existing_objects = projects.each_with_index.map do |project, i|
+        Rails.logger.info "Loading project details for #{project.code_url} (#{i}/#{projects.length})..."
+        repo = ApiObject::GithubRepo.find_by(object_id: project.code_url)
+        repo_name = format('%<owner>s/%<repo>s', owner: repo.body['owner']['login'], repo: repo.body['name'])
+        body = {}
+
+        if ratelimit_remaining.to_i > 100
+          body['readme'] = client.readme(repo_name) rescue Octokit::NotFound
+          body['languages'] = client.languages(repo_name)
+          body['contributors'] = client.contributors(repo_name)
+          body['civic_json'] = client.contents(repo_name, path: 'civic.json') rescue Octokit::NotFound
+          body['publiccode_yaml'] = client.contents(repo_name, path: 'publiccode.yml') rescue Octokit::NotFound
+          response = client.last_response
+          ratelimit_remaining = response.headers['X-Ratelimit-Remaining']
+          Rails.logger.info "  Rate limit: #{ratelimit_remaining} Remaining"
+        else
+          Rails.logger.info "Creating stub repo details due to low rate limit"
+        end
+
+        ApiObject::GithubRepoDetails
+          .find_or_create_by(object_id: project.code_url)
+          .tap { |o| o.update_attributes(body: body) }
+          .tap(&:touch)
+      end
+
+      ApiObject::GithubRepoDetails.where.not(id: existing_objects).destroy_all
     end
   end
 
