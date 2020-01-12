@@ -16,7 +16,7 @@
         %h2 Brigade Projects
 
         %ul.list-group
-          - @projects.sort_by { |p| p.name }.each do |project|
+          - @projects.each do |project|
             %li.list-group-item
               %strong= project.name
               - if project.link_url
