@@ -121,32 +121,41 @@ namespace :sync do
   task project_github: :environment do
     github_identity = OAuthIdentity::Github.last.to_token
     client = Octokit::Client.new(access_token: github_identity.token)
-    projects = BrigadeProject.where('code_url LIKE ?', '%github.com%')
-    projects.each_with_index do |project, i|
-      conditional_headers = {}
 
-      if project.last_modified_at
-        Rails.logger.info "Conditionally requesting #{project.code_url} (#{i}/#{projects.length})..."
-        conditional_headers['If-Modified-Since'] = project.last_modified_at.rfc2822
-      else
-        Rails.logger.info "Loading project details for #{project.code_url} (#{i}/#{projects.length})..."
-      end
+    ApiObject::GithubRepo.transaction do
+      projects = BrigadeProject.where('code_url LIKE ?', '%github.com%')
 
-      begin
-        repo = client.repo(URI(project.code_url).path[1..-1], headers: conditional_headers)
-      rescue => ex
-        Rails.logger.error "  Error Fetching: #{ex.message}"
-        next
-      end
-      response = client.last_response
-      Rails.logger.info "  Got status: #{response.status}"
-      Rails.logger.info "  Rate limit: #{response.headers['X-Ratelimit-Remaining']} Remaining"
-      next if response.status.to_i == 304
+      existing_objects = projects.each_with_index.map do |project, i|
+        ApiObject::GithubRepo.find_or_create_by(object_id: project.code_url).tap do |existing|
+          conditional_headers = {}
+          if existing.body.present?
+            conditional_headers['If-Modified-Since'] = Time.parse(existing.body['updated_at']).rfc2822
+          end
 
-      project.update_attributes(
-        last_modified_at: response.headers[:last_modified],
-        last_pushed_at: repo.pushed_at
-      )
+          Rails.logger.info "Loading project details for #{project.code_url} (#{i}/#{projects.length})..."
+          begin
+            repo = client.repo(URI(project.code_url).path[1..-1], headers: conditional_headers)
+          rescue => ex
+            Rails.logger.error "  Error Fetching: #{ex.message}"
+            next
+          end
+
+          response = client.last_response
+          Rails.logger.info "  Got status: #{response.status}"
+          Rails.logger.info "  Rate limit: #{response.headers['X-Ratelimit-Remaining']} Remaining"
+
+          existing.touch
+
+          next if response.status.to_i == 304
+          existing.update_attributes(body: repo.to_h)
+          project.update_attributes(
+            last_modified_at: response.headers[:last_modified],
+            last_pushed_at: repo.pushed_at
+          )
+        end
+      end.compact
+
+      ApiObject::GithubRepo.where.not(id: existing_objects).destroy_all
     end
   end
 
