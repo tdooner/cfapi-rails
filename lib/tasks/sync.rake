@@ -95,6 +95,9 @@ namespace :sync do
         ApiObject::BrigadeProjectIndexEntry.all
       )
     end
+    email_builder.capture_events do
+      Rake::Task['sync:project_github'].invoke
+    end
     email_builder.send_email if email_builder.changes?
   end
 
