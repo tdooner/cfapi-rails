@@ -74,6 +74,22 @@ namespace :sync do
     end
   end
 
+  desc 'sync meetup events'
+  task meetup_group_events: :environment do
+    client = MeetupGroupInfoClient.new(OAuthIdentity::Meetup.admin.last.to_token)
+
+    ApiObject::MeetupGroup.transaction do
+      existing_objects = ApiObject::MeetupGroup.all.map do |group|
+        ApiObject::MeetupGroupEvents
+          .find_or_create_by(object_id: group.object_id)
+          .tap { |r| r.update_attributes(body: client.group_events(group.body['urlname']).to_a) }
+          .tap(&:touch)
+      end
+
+      ApiObject::MeetupGroupEvents.where.not(id: existing_objects).destroy_all
+    end
+  end
+
   desc 'sync brigade projects'
   task projects: :environment do
     client = BrigadeProjectIndexClient.new

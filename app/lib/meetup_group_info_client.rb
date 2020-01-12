@@ -20,4 +20,13 @@ class MeetupGroupInfoClient
       .parsed
       .each(&block)
   end
+
+  def group_events(group_urlname, &block)
+    return to_enum(:group_events, group_urlname) unless block_given?
+
+    @oauth2_token
+      .get(format('/%<urlname>s/events', urlname: group_urlname), params: { scroll: 'next_upcoming', desc: true })
+      .parsed
+      .each(&block)
+  end
 end
