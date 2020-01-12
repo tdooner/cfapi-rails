@@ -146,7 +146,8 @@ namespace :sync do
 
           existing.touch
 
-          next if response.status.to_i == 304
+          # TODO: Handle redirects here (e.g. https://github.com/louiedog98/phillyBikeThefts)
+          next if response.status.to_i == 304 # Not Modified
           existing.update_attributes(body: repo.to_h)
           project.update_attributes(
             last_modified_at: response.headers[:last_modified],
@@ -176,7 +177,7 @@ namespace :sync do
       existing_objects = projects.each_with_index.map do |project, i|
         Rails.logger.info "Loading project details for #{project.code_url} (#{i}/#{projects.length})..."
         repo = ApiObject::GithubRepo.find_by(object_id: project.code_url)
-        next unless repo && repo.body.present?
+        next unless repo && repo.body.present? && repo.body['owner'].present?
         repo_name = format('%<owner>s/%<repo>s', owner: repo.body['owner']['login'], repo: repo.body['name'])
         body = {}
 
@@ -197,7 +198,7 @@ namespace :sync do
           .find_or_create_by(object_id: project.code_url)
           .tap { |o| o.update_attributes(body: body) }
           .tap(&:touch)
-      end
+      end.compact
 
       ApiObject::GithubRepoDetails.where.not(id: existing_objects).destroy_all
     end
