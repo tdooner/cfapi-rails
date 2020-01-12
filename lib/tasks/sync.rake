@@ -176,6 +176,7 @@ namespace :sync do
       existing_objects = projects.each_with_index.map do |project, i|
         Rails.logger.info "Loading project details for #{project.code_url} (#{i}/#{projects.length})..."
         repo = ApiObject::GithubRepo.find_by(object_id: project.code_url)
+        next unless repo && repo.body.present?
         repo_name = format('%<owner>s/%<repo>s', owner: repo.body['owner']['login'], repo: repo.body['name'])
         body = {}
 
