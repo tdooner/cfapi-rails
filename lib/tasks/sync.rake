@@ -128,7 +128,7 @@ namespace :sync do
       existing_objects = projects.each_with_index.map do |project, i|
         ApiObject::GithubRepo.find_or_create_by(object_id: project.code_url).tap do |existing|
           conditional_headers = {}
-          if existing.body.present?
+          if existing.body.present? && existing.body['updated_at']
             conditional_headers['If-Modified-Since'] = Time.parse(existing.body['updated_at']).rfc2822
           end
 
