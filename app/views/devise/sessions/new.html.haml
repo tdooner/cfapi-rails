@@ -1,35 +1,37 @@
 .container
   .row
-    .col-12
+    .col-md-6.offset-md-3
       %h2 Log in
 
-    .col-12.col-md-6
-      = form_for(resource, as: resource_name, url: session_path(resource_name)) do |f|
-        - if devise_mapping.omniauthable?
-          - resource_class.omniauth_providers.each do |provider|
-            = link_to "Sign in with #{OmniAuth::Utils.camelize(provider)}", omniauth_authorize_path(resource_name, provider)
+      .card
+        .card-body
+          = form_for(resource, as: resource_name, url: session_path(resource_name)) do |f|
+            = link_to omniauth_authorize_path(resource_name, :github), class: 'btn btn-primary' do
+              %i.fab.fa-github
+              Sign in with #{OmniAuth::Utils.camelize(:github)}
 
-    .col-12.col-md-6
-      = form_for(resource, as: resource_name, url: session_path(resource_name)) do |f|
-        %p
-          Sign in with username/password
+      %br
+      .card
+        .card-body
+          = form_for(resource, as: resource_name, url: session_path(resource_name)) do |f|
+            %h5.card-title
+              Sign in with username/password
 
-        .field
-          = f.label :email
-          %br
-          = f.email_field :email, autofocus: true, autocomplete: "email"
+            .form-group
+              = f.label :email
+              = f.email_field :email, autofocus: true, autocomplete: "email", class: 'form-control'
 
-        .field
-          = f.label :password
-          %br
-          = f.password_field :password, autocomplete: "current-password"
+            .form-group
+              = f.label :password
+              = f.password_field :password, autocomplete: "current-password", class: 'form-control'
 
-        - if devise_mapping.rememberable?
-          .field
-            = f.check_box :remember_me
-            = f.label :remember_me
+            - if devise_mapping.rememberable?
+              .form-group.form-check
+                = f.check_box :remember_me, class: 'form-check-input'
+                = f.label :remember_me, class: 'form-check-label'
 
-        .actions
-          = f.submit "Log in"
+            .actions
+              = f.submit "Log in", class: 'btn btn-secondary'
 
-        = render "devise/shared/links"
+        .card-body
+          = render "devise/shared/links"
