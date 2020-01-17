@@ -36,6 +36,10 @@ class OAuthIdentity < ApplicationRecord
         config['client_options'].deep_symbolize_keys
       )
 
+      # Salesforce tokens claim to never expire. This is experimentally wrong.
+      auth_payload['credentials'].delete('expires')
+      auth_payload['credentials']['expires_in'] = 1.hour.to_i
+
       identity = find_or_initialize_by(service_user_id: auth_payload['uid'])
       identity.assign_attributes(
         service_username: auth_payload['info']['email'],
