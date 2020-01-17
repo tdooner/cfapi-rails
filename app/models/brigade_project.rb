@@ -2,6 +2,10 @@ class BrigadeProject < ApplicationRecord
   include BroadcastChanges
 
   belongs_to :brigade
+  has_one :github_repo, primary_key: :code_url, foreign_key: :object_id,
+    class_name: 'ApiObject::GithubRepo'
+  has_one :github_repo_details, primary_key: :code_url, foreign_key: :object_id,
+    class_name: 'ApiObject::GithubRepoDetails'
 
   def self.replace_all_from_project_database(api_objects)
     BrigadeProject.transaction do

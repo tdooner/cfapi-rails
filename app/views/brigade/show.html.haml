@@ -16,20 +16,50 @@
       - if @projects.any?
         %h2 Brigade Projects
 
-        %ul.list-group
-          - @projects.each do |project|
-            %li.list-group-item
-              %strong= project.name
-              - if project.link_url
-                = link_to project.link_url, target: '_blank' do
-                  = project.link_url
-                  %i.fas.fa-external-link-alt
-              - if project.code_url
-                = link_to project.code_url, target: '_blank' do
-                  %i.fab.fa-github
-              - if project.last_pushed_at
-                Last updated: #{distance_of_time_in_words_to_now project.last_pushed_at}
+        - github_projects, non_github_projects = @projects.partition(&:last_pushed_at)
+        - active_projects, inactive_projects = github_projects.partition { |p| p.last_pushed_at > 1.year.ago }
+        .card-columns
+          - active_projects.each do |project|
+            - github_repo = project.github_repo
+            - github_repo_details = project.github_repo_details
 
+            .card
+              .card-header.text-muted
+                - if github_repo
+                  %i.fas.fa-eye
+                  #{github_repo.body['subscribers_count']}
+
+                  %i.fas.fa-star
+                  #{github_repo.body['stargazers_count']}
+                  - if github_repo.body['fork']
+                    %i.fas.fa-code-branch
+                    = github_repo.body['parent']['owner']['login']
+                    \/
+                    = github_repo.body['parent']['name']
+              .card-body
+                %h5.card-title= project.name
+                .card-text
+              .card-footer
+                - if project.link_url
+                  = link_to project.link_url, target: '_blank' do
+                    = project.link_url
+                    %i.fas.fa-external-link-alt
+                - if project.code_url
+                  = link_to project.code_url, target: '_blank' do
+                    %i.fab.fa-github
+
+                - if project.last_pushed_at
+                  Last updated: #{distance_of_time_in_words_to_now project.last_pushed_at}
+
+        %h2 Inactive Projects:
+        %ul
+        - inactive_projects.each do |project|
+          %li
+            %strong= project.name
+        - non_github_projects.each do |project|
+          %li
+            %strong= project.name
+            (Unknown Code URL: #{project.code_url})
 
       - if @meetup_page
         - details = @meetup_page.body

@@ -4,7 +4,7 @@ class BrigadeController < ApplicationController
 
   def show
     @meetup_page = @brigade.meetup
-    @projects = @brigade.brigade_projects.order(last_pushed_at: :desc)
+    @projects = @brigade.brigade_projects.includes(:github_repo, :github_repo_details).order(last_pushed_at: :desc)
     @stats = @brigade.metric_snapshots
   end
 
