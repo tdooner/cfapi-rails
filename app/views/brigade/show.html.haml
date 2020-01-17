@@ -36,9 +36,11 @@
                     = github_repo.body['parent']['owner']['login']
                     \/
                     = github_repo.body['parent']['name']
+
               .card-body
                 %h5.card-title= project.name
                 .card-text
+                  = github_repo.body['description']
               .card-footer
                 - if project.link_url
                   = link_to project.link_url, target: '_blank' do
