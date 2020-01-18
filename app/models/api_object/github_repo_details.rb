@@ -45,7 +45,11 @@ class ApiObject
       html = Redcarpet::Markdown.new(Redcarpet::Render::HTML).render(markdown)
       return unless html.present?
 
-      Nokogiri::HTML(html).to_xhtml
+      Nokogiri::HTML(html).tap do |doc|
+        # Remove HTML comments as their contents are not properly escaped by
+        # Nokogiri
+        doc.xpath('//comment()').remove
+      end.to_xhtml
     end
   end
 end
