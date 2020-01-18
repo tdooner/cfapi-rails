@@ -187,7 +187,7 @@ namespace :sync do
 
         ApiObject::GithubRepoDetails
           .find_or_create_by(object_id: project.code_url)
-          .tap(&:update_if_necessary)
+          .tap { |o| o.update_if_necessary(client) }
       end.compact
 
       ApiObject::GithubRepoDetails.where.not(id: existing_objects).destroy_all
