@@ -170,7 +170,11 @@ namespace :sync do
       # order projecs so ones with stub project details will come first
       projects =
         BrigadeProject
-        .joins("LEFT OUTER JOIN api_objects ON api_objects.object_id = brigade_projects.code_url AND api_objects.type = 'ApiObject::GithubRepoDetails'")
+        .joins(<<-SQL)
+          LEFT OUTER JOIN api_objects
+            ON api_objects.object_id = brigade_projects.code_url
+            AND api_objects.type = 'ApiObject::GithubRepoDetails'
+        SQL
         .where('code_url LIKE ?', '%github.com%')
         .order('api_objects.id DESC')
 

@@ -19,7 +19,10 @@ class ApiObject
 
     def fetch_body(client)
       repo = ApiObject::GithubRepo.find_by(object_id: object_id)
-      return unless repo && repo.body.present? && repo.body['owner'].present?
+      unless repo && repo.body.present? && repo.body['owner'].present?
+        Rails.logger.info "  No repo details found for #{object_id}. Skipping."
+        return
+      end
 
       repo_name = format('%<owner>s/%<repo>s', owner: repo.body['owner']['login'], repo: repo.body['name'])
 
