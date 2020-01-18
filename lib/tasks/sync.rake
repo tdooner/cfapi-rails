@@ -176,13 +176,8 @@ namespace :sync do
 
       existing_objects = projects.each_with_index.map do |project, i|
         Rails.logger.info "Loading project details for #{project.code_url} (#{i}/#{projects.length})..."
-        repo = ApiObject::GithubRepo.find_by(object_id: project.code_url)
-        next unless repo && repo.body.present? && repo.body['owner'].present?
-
-        repo_name = format('%<owner>s/%<repo>s', owner: repo.body['owner']['login'], repo: repo.body['name'])
 
         if ratelimit_remaining.to_i > 100
-          body = GithubRepoDetailFetcher.new(client, repo_name).fetch_details
           response = client.last_response
           ratelimit_remaining = response.headers['X-Ratelimit-Remaining']
           Rails.logger.info "  Rate limit: #{ratelimit_remaining} Remaining"
@@ -192,8 +187,7 @@ namespace :sync do
 
         ApiObject::GithubRepoDetails
           .find_or_create_by(object_id: project.code_url)
-          .tap { |o| o.update_attributes(body: body) if body.present? }
-          .tap(&:touch)
+          .tap(&:update_if_necessary)
       end.compact
 
       ApiObject::GithubRepoDetails.where.not(id: existing_objects).destroy_all

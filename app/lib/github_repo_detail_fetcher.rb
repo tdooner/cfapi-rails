@@ -4,7 +4,7 @@ class GithubRepoDetailFetcher
     @repo_name = repo_name
   end
 
-  def fetch_details
+  def fetch_everything
     {
       'readme' => fetch_readme,
       'languages' => fetch_languages,
@@ -13,8 +13,6 @@ class GithubRepoDetailFetcher
       'publiccode_yaml' => fetch_publiccode_yaml,
     }
   end
-
-  private
 
   def fetch_readme
     @client.readme(@repo_name)
