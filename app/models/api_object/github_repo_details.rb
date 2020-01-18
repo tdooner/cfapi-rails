@@ -38,7 +38,7 @@ class ApiObject
     def render_readme
       return unless body.present? && body['readme'].present?
 
-      markdown = Base64.decode64(Hash[body['readme']]['content'])
+      markdown = Base64.decode64(Hash[body['readme']]['content']).force_encoding('UTF-8')
       Redcarpet::Markdown.new(Redcarpet::Render::HTML).render(markdown)
     end
   end
