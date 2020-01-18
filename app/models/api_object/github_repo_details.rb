@@ -8,10 +8,10 @@ class ApiObject
       when nil
         # load everything
         update_attributes(body: transform_body(fetch_body(client)))
-      when '1'
+      when '1', '2'
         # just re-transform the existing body
         update_attributes(body: transform_body(body))
-      when '2'
+      when '3'
         return if updated_at > REFETCH_EVERY.ago
         update_attributes(body: transform_body(fetch_body(client)))
       end
@@ -42,7 +42,7 @@ class ApiObject
       return unless body.present? && body['readme'].present?
 
       markdown = Base64.decode64(Hash[body['readme']]['content']).force_encoding('UTF-8')
-      Redcarpet::Markdown.new(Redcarpet::Render::HTML).render(markdown)
+      Nokogiri::HTML(Redcarpet::Markdown.new(Redcarpet::Render::HTML).render(markdown)).to_xhtml
     end
   end
 end
