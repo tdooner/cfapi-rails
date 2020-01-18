@@ -178,15 +178,11 @@ namespace :sync do
         Rails.logger.info "Loading project details for #{project.code_url} (#{i}/#{projects.length})..."
         repo = ApiObject::GithubRepo.find_by(object_id: project.code_url)
         next unless repo && repo.body.present? && repo.body['owner'].present?
+
         repo_name = format('%<owner>s/%<repo>s', owner: repo.body['owner']['login'], repo: repo.body['name'])
-        body = {}
 
         if ratelimit_remaining.to_i > 100
-          body['readme'] = client.readme(repo_name) rescue Octokit::NotFound
-          body['languages'] = client.languages(repo_name)
-          body['contributors'] = client.contributors(repo_name)
-          body['civic_json'] = client.contents(repo_name, path: 'civic.json') rescue Octokit::NotFound
-          body['publiccode_yaml'] = client.contents(repo_name, path: 'publiccode.yml') rescue Octokit::NotFound
+          body = GithubRepoDetailFetcher.new(client, repo_name).fetch_details
           response = client.last_response
           ratelimit_remaining = response.headers['X-Ratelimit-Remaining']
           Rails.logger.info "  Rate limit: #{ratelimit_remaining} Remaining"
