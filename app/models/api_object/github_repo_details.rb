@@ -42,7 +42,7 @@ class ApiObject
       return unless body.present? && body['readme'].present?
 
       markdown = Base64.decode64(Hash[body['readme']]['content']).force_encoding('UTF-8')
-      html = Redcarpet::Markdown.new(Redcarpet::Render::HTML).render(markdown)
+      html = Redcarpet::Markdown.new(Redcarpet::Render::HTML, fenced_code_blocks: true).render(markdown)
       return unless html.present?
 
       Nokogiri::HTML(html).tap do |doc|
