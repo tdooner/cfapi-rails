@@ -27,6 +27,8 @@ class ApiObject
     end
 
     def transform_body(body)
+      return unless body.present?
+
       body.dup.tap do |transformed_body|
         transformed_body['readme_html'] = render_readme
         transformed_body['version'] = '2'
