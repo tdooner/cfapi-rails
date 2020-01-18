@@ -42,7 +42,10 @@ class ApiObject
       return unless body.present? && body['readme'].present?
 
       markdown = Base64.decode64(Hash[body['readme']]['content']).force_encoding('UTF-8')
-      Nokogiri::HTML(Redcarpet::Markdown.new(Redcarpet::Render::HTML).render(markdown)).to_xhtml
+      html = Redcarpet::Markdown.new(Redcarpet::Render::HTML).render(markdown)
+      return unless html.present?
+
+      Nokogiri::HTML(html).to_xhtml
     end
   end
 end
