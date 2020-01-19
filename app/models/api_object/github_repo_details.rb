@@ -34,9 +34,24 @@ class ApiObject
 
       body.dup.tap do |transformed_body|
         transformed_body['languages'] = Hash[body['languages']]
-        transformed_body['civic_json'] = Hash[body['civic_json']] if body['civic_json']
-        transformed_body['publiccode_yaml'] = Hash[body['publiccode_yaml']] if body['publiccode_yaml']
-        transformed_body['contributors'] = body['contributors'].map(&:to_h)
+
+        if body['civic_json']
+          begin
+            transformed_body['civic_json'] = JSON.parse(Base64.decode64(body['civic_json']['content']))
+          rescue
+            transformed_body['civic_json'] = nil
+          end
+        end
+
+        if body['publiccode_yaml']
+          begin
+            transformed_body['publiccode_yaml'] = YAML.safe_load(Base64.decode64(body['civic_json']['content']))
+          rescue
+            transformed_body['publiccode_yaml'] = nil
+          end
+        end
+
+        transformed_body['contributors'] = body['contributors'].presence&.map(&:to_h)
         transformed_body['readme_html'] = render_readme
         transformed_body['version'] = '2'
       end
