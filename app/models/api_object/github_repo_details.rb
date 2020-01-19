@@ -33,9 +33,10 @@ class ApiObject
       return unless body.present?
 
       body.dup.tap do |transformed_body|
-        transformed_body['languages'] = Hash[body['languages']] if body['languages']
+        transformed_body['languages'] = Hash[body['languages']]
         transformed_body['civic_json'] = Hash[body['civic_json']] if body['civic_json']
         transformed_body['publiccode_yaml'] = Hash[body['publiccode_yaml']] if body['publiccode_yaml']
+        transformed_body['contributors'] = body['contributors'].map(&:to_h)
         transformed_body['readme_html'] = render_readme
         transformed_body['version'] = '2'
       end
