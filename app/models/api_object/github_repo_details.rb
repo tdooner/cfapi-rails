@@ -9,6 +9,10 @@ class ApiObject
         # load everything
         update_attributes(body: transform_body(fetch_body(client)))
       when '1', '2'
+        # re-download civic.json & publiccode.yaml since I accidentally
+        # destroyed them
+        body['civic_json'] = GithubRepoDetailFetcher.new(client, repo_name).fetch_civic_json
+        body['publiccode_yaml'] = GithubRepoDetailFetcher.new(client, repo_name).fetch_publiccode_yaml
         # just re-transform the existing body
         update_attributes(body: transform_body(body))
       when '3'
