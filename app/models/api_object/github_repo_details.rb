@@ -11,8 +11,9 @@ class ApiObject
       when '1', '2'
         # re-download civic.json & publiccode.yaml since I accidentally
         # destroyed them
-        body['civic_json'] = GithubRepoDetailFetcher.new(client, repo_name).fetch_civic_json
-        body['publiccode_yaml'] = GithubRepoDetailFetcher.new(client, repo_name).fetch_publiccode_yaml
+        backfill = backfill_civic_json_and_publiccode_yaml(client)
+        body['civic_json'] = backfill['civic_json']
+        body['publiccode_yaml'] = backfill['publiccode_yaml']
         # just re-transform the existing body
         update_attributes(body: transform_body(body))
       when '3'
@@ -31,6 +32,22 @@ class ApiObject
       repo_name = format('%<owner>s/%<repo>s', owner: repo.body['owner']['login'], repo: repo.body['name'])
 
       GithubRepoDetailFetcher.new(client, repo_name).fetch_everything
+    end
+
+    def backfill_civic_json_and_publiccode_yaml(client)
+      repo = ApiObject::GithubRepo.find_by(object_id: object_id)
+      unless repo && repo.body.present? && repo.body['owner'].present?
+        Rails.logger.info "  No repo details found for #{object_id}. Skipping."
+        return
+      end
+
+      repo_name = format('%<owner>s/%<repo>s', owner: repo.body['owner']['login'], repo: repo.body['name'])
+      fetcher = GithubRepoDetailFetcher.new(client, repo_name)
+
+      {
+        'civic_json' => fetcher.fetch_civic_json,
+        'publiccode_yaml' => fetcher.fetch_publiccode_yaml,
+      }
     end
 
     def transform_body(body)
