@@ -38,15 +38,17 @@ class ApiObject
         if body['civic_json']
           begin
             transformed_body['civic_json'] = JSON.parse(Base64.decode64(body['civic_json']['content']))
-          rescue
+          rescue => ex
+            Rails.logger.info "Error parsing civic.json: #{ex.message}"
             transformed_body['civic_json'] = nil
           end
         end
 
         if body['publiccode_yaml']
           begin
-            transformed_body['publiccode_yaml'] = YAML.safe_load(Base64.decode64(body['civic_json']['content']))
+            transformed_body['publiccode_yaml'] = YAML.safe_load(Base64.decode64(body['publiccode_yaml']['content']))
           rescue
+            Rails.logger.info "Error parsing publiccode.yaml: #{ex.message}"
             transformed_body['publiccode_yaml'] = nil
           end
         end
