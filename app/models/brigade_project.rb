@@ -1,5 +1,12 @@
 class BrigadeProject < ApplicationRecord
   include BroadcastChanges
+  include MetricSnapshottable
+
+  metric :github_stargazers_count, -> { github&.body&.dig("stargazers_count") }
+  metric :github_watchers_count, -> { github&.body&.dig("subscribers_count") }
+  metric :github_open_issues_count, -> { github&.body&.dig("open_issues_count") }
+  metric :github_network_count, -> { github&.body&.dig("network_count") }
+  metric :github_size, -> { github&.body&.dig("size") }
 
   belongs_to :brigade
   has_one :github_repo, primary_key: :code_url, foreign_key: :object_id,
@@ -30,5 +37,9 @@ class BrigadeProject < ApplicationRecord
 
       BrigadeProject.where.not(id: brigade_projects).destroy_all
     end
+  end
+
+  def github
+    @github ||= ApiObject::GithubRepo.find_by(object_id: code_url)
   end
 end

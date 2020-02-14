@@ -1,22 +1,11 @@
 class Brigade < ApplicationRecord
   extend FriendlyId
+  include MetricSnapshottable
 
   has_many :brigade_leaders
   has_many :brigade_projects
-  has_many :metric_snapshots, as: :related_object
-
-  cattr_accessor :metrics
 
   friendly_id :name, use: :slugged
-
-  def self.metric(name, blk)
-    Brigade.metrics ||= []
-    Brigade.metrics << [name, blk]
-  end
-
-  def calculate_metrics
-    Brigade.metrics.map { |name, blk| [name, instance_exec(&blk)] }
-  end
 
   metric :meetup_past_rsvps, -> { meetup&.body&.fetch('past_rsvps', nil) }
   metric :meetup_repeat_rsvpers, -> { meetup&.body&.fetch('repeat_rsvpers', nil) }

@@ -30,3 +30,6 @@ project index epic:
 
 meetup data epic:
 * create a view for authenticated brigade leaders
+
+search results epic:
+* combine multiple search results for a single brigade (e.g. "courtbot")
