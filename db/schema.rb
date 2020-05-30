@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_01_11_214230) do
+ActiveRecord::Schema.define(version: 2020_05_30_233116) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -108,4 +108,49 @@ ActiveRecord::Schema.define(version: 2020_01_11_214230) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+
+  create_view "brigade_projects_search_fields", materialized: true, sql_definition: <<-SQL
+      WITH contributors_by_repo AS (
+           SELECT repo_details_1.object_id,
+              string_agg(contributor.login, '|'::text) AS contributors
+             FROM api_objects repo_details_1,
+              LATERAL jsonb_to_recordset((repo_details_1.body -> 'contributors'::text)) contributor(login text)
+            WHERE (((repo_details_1.type)::text = 'ApiObject::GithubRepoDetails'::text) AND ((repo_details_1.body ->> 'contributors'::text) <> ''::text))
+            GROUP BY repo_details_1.object_id
+          ), languages_by_repo AS (
+           SELECT repo_details_1.object_id,
+              string_agg(languages.key, '|'::text) AS languages
+             FROM api_objects repo_details_1,
+              LATERAL jsonb_each_text((repo_details_1.body -> 'languages'::text)) languages(key, value)
+            WHERE (((repo_details_1.type)::text = 'ApiObject::GithubRepoDetails'::text) AND ((repo_details_1.body ->> 'languages'::text) <> ''::text))
+            GROUP BY repo_details_1.object_id
+          ), topics_by_repo AS (
+           SELECT api_objects.object_id,
+              string_agg(topics.name, '|'::text) AS topics
+             FROM api_objects,
+              LATERAL jsonb_to_recordset((api_objects.body -> 'topics'::text)) topics(name text)
+            WHERE (((api_objects.type)::text = 'ApiObject::GithubRepo'::text) AND ((api_objects.body ->> 'topics'::text) <> ''::text))
+            GROUP BY api_objects.object_id
+          )
+   SELECT brigade_projects.id AS brigade_project_id,
+      (repo.body ->> 'name'::text) AS github_repo_name,
+      (repo.body ->> 'description'::text) AS github_repo_description,
+      array_to_string(xpath('//xhtml:h1[1]/descendant-or-self::text()'::text, ((repo_details.body ->> 'readme_html'::text))::xml, ARRAY[ARRAY['xhtml'::text, 'http://www.w3.org/1999/xhtml'::text]]), ''::text) AS github_readme_title,
+      array_to_string(xpath('//xhtml:p[1]/descendant-or-self::text()'::text, ((repo_details.body ->> 'readme_html'::text))::xml, ARRAY[ARRAY['xhtml'::text, 'http://www.w3.org/1999/xhtml'::text]]), ''::text) AS github_readme_first_paragraph,
+      contributors_by_repo.contributors AS github_contributors,
+      languages_by_repo.languages AS github_languages,
+      topics_by_repo.topics AS github_topics,
+      array_to_string(xpath('//xhtml:*/descendant-or-self::text()'::text, ((repo_details.body ->> 'readme_html'::text))::xml, ARRAY[ARRAY['xhtml'::text, 'http://www.w3.org/1999/xhtml'::text]]), ''::text) AS github_readme_text
+     FROM (((((brigade_projects
+       JOIN api_objects repo ON ((((repo.object_id)::text = (brigade_projects.code_url)::text) AND ((repo.type)::text = 'ApiObject::GithubRepo'::text))))
+       JOIN api_objects repo_details ON ((((repo_details.object_id)::text = (brigade_projects.code_url)::text) AND ((repo_details.type)::text = 'ApiObject::GithubRepoDetails'::text))))
+       LEFT JOIN contributors_by_repo ON (((contributors_by_repo.object_id)::text = (repo.object_id)::text)))
+       LEFT JOIN languages_by_repo ON (((languages_by_repo.object_id)::text = (repo.object_id)::text)))
+       LEFT JOIN topics_by_repo ON (((topics_by_repo.object_id)::text = (repo.object_id)::text)));
+  SQL
+  create_view "brigade_projects_searches", materialized: true, sql_definition: <<-SQL
+      SELECT brigade_projects_search_fields.brigade_project_id,
+      (((((((setweight(to_tsvector(COALESCE(brigade_projects_search_fields.github_repo_name, ''::text)), 'A'::"char") || setweight(to_tsvector(COALESCE(brigade_projects_search_fields.github_repo_description, ''::text)), 'A'::"char")) || setweight(to_tsvector(COALESCE(brigade_projects_search_fields.github_readme_title, ''::text)), 'B'::"char")) || setweight(to_tsvector(COALESCE(brigade_projects_search_fields.github_readme_first_paragraph, ''::text)), 'B'::"char")) || setweight(to_tsvector(COALESCE(brigade_projects_search_fields.github_contributors, ''::text)), 'A'::"char")) || setweight(to_tsvector(COALESCE(brigade_projects_search_fields.github_languages, ''::text)), 'A'::"char")) || setweight(to_tsvector(COALESCE(brigade_projects_search_fields.github_topics, ''::text)), 'A'::"char")) || setweight(to_tsvector(COALESCE(brigade_projects_search_fields.github_readme_text, ''::text)), 'C'::"char"))
+     FROM brigade_projects_search_fields;
+  SQL
 end
