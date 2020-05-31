@@ -13,7 +13,7 @@ class ProjectsController < ApplicationController
 
     @results = BrigadeProject.connection.execute(BrigadeProject.sanitize_sql([<<-SQL.strip_heredoc, q, q])).map(&:to_h)
       SELECT
-        brigade_projects_search.brigade_project_id,
+        brigade_projects_searches.brigade_project_id,
         ts_rank_cd(keywords, to_tsquery(?)) as rank,
         brigade_projects.*
       FROM brigade_projects_searches
