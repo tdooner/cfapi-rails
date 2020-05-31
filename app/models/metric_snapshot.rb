@@ -24,16 +24,21 @@ class MetricSnapshot < ApplicationRecord
       time: created_at.to_i,
     }.merge(related_object_fields)
 
+    success = nil
     if created_at <= 5.days.ago
       if ENV['MIXPANEL_API_KEY'].present?
-        mixpanel.import(ENV['MIXPANEL_API_KEY'], FAKE_MIXPANEL_USER_ID, metric_name, event_fields)
+        success = mixpanel.import(ENV['MIXPANEL_API_KEY'], FAKE_MIXPANEL_USER_ID, metric_name, event_fields)
       else
         Rails.logger.warn "Cannot send MetricSnapshot to Mixpanel: Older than 5 days and MIXPANEL_API_KEY missing."
       end
     else
-      mixpanel.track(FAKE_MIXPANEL_USER_ID, metric_name, event_fields)
+      success = mixpanel.track(FAKE_MIXPANEL_USER_ID, metric_name, event_fields)
     end
 
-    touch(:sent_to_mixpanel_at)
+    if success
+      touch(:sent_to_mixpanel_at)
+    else
+      Rails.logger.info "Failed to send event to Mixpanel."
+    end
   end
 end
