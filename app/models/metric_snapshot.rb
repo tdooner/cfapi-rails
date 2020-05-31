@@ -12,7 +12,7 @@ class MetricSnapshot < ApplicationRecord
 
     mixpanel = Mixpanel::Tracker.new(ENV['MIXPANEL_TOKEN'])
 
-    related_object_fields = related_object.attributes.tranform_keys { |k| "#{related_object_type.underscore}_#{k}" }
+    related_object_fields = related_object.attributes.transform_keys { |k| "#{related_object_type.underscore}_#{k}" }
     event_fields = {
       value: metric_value,
       time: created_at.to_i,
