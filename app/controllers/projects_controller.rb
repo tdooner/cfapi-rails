@@ -16,11 +16,11 @@ class ProjectsController < ApplicationController
         brigade_projects_search.brigade_project_id,
         ts_rank_cd(keywords, to_tsquery(?)) as rank,
         brigade_projects.*
-      FROM brigade_projects_search
+      FROM brigade_projects_searches
       INNER JOIN brigade_projects
         ON brigade_projects.id = brigade_project_id
       INNER JOIN brigade_projects_search_fields
-        ON brigade_projects_search_fields.brigade_project_id = brigade_projects_search.brigade_project_id
+        ON brigade_projects_search_fields.brigade_project_id = brigade_projects_searches.brigade_project_id
       WHERE ts_rank_cd(keywords, to_tsquery(?)) > 0
       ORDER BY rank DESC
       LIMIT 15;
