@@ -41,6 +41,13 @@ namespace :metrics do
     end
   end
 
+  task send_to_mixpanel: :environment do
+    MetricSnapshot
+      .unsent_to_mixpanel
+      .includes(:related_object)
+      .find_each(&:send_to_mixpanel)
+  end
+
   desc 'capture all the metrics'
   task capture_all: %i[capture_brigades capture_projects]
 end

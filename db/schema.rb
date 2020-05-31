@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_30_233116) do
+ActiveRecord::Schema.define(version: 2020_05_30_235027) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -69,6 +69,7 @@ ActiveRecord::Schema.define(version: 2020_05_30_233116) do
     t.datetime "created_at"
     t.string "related_object_type"
     t.bigint "related_object_id"
+    t.datetime "sent_to_mixpanel_at"
     t.index ["metric_name", "created_at"], name: "index_metric_snapshots_on_metric_name_and_created_at"
     t.index ["related_object_type", "related_object_id"], name: "idx_metric_snapshots_related_object"
   end
