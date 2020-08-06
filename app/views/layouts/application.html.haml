@@ -20,33 +20,33 @@
           %span.navbar-toggler-icon
         #navbarSupportedContent.collapse.navbar-collapse
           %ul.navbar-nav.mr-auto
-            %li.nav-item.active
-              %a.nav-link{:href => "#"}
-                Home
-                %span.sr-only (current)
-            %li.nav-item
-              = link_to 'Projects', projects_path, class: 'nav-link'
-            %li.nav-item.dropdown
-              %a#navbarDropdown.nav-link.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :href => "#", :role => "button"}
-                Dropdown
-              .dropdown-menu{"aria-labelledby" => "navbarDropdown"}
-                %a.dropdown-item{:href => "#"} Action
-                %a.dropdown-item{:href => "#"} Another action
-                .dropdown-divider
-                %a.dropdown-item{:href => "#"} Something else here
-            %li.nav-item
-              %a.nav-link.disabled{"aria-disabled" => "true", :href => "#", :tabindex => "-1"} Disabled
+            = nav_link_item 'Home', root_path
+            = nav_link_item 'Project Search', projects_path
+            -#
+              %li.nav-item.dropdown
+                %a#navbarDropdown.nav-link.dropdown-toggle{"aria-expanded" => "false", "aria-haspopup" => "true", "data-toggle" => "dropdown", :href => "#", :role => "button"}
+                  Dropdown
+                .dropdown-menu{"aria-labelledby" => "navbarDropdown"}
+                  %a.dropdown-item{:href => "#"} Action
+                  %a.dropdown-item{:href => "#"} Another action
+                  .dropdown-divider
+                  %a.dropdown-item{:href => "#"} Something else here
+              %li.nav-item
+                %a.nav-link.disabled{"aria-disabled" => "true", :href => "#", :tabindex => "-1"} Disabled
           %span.navbar-nav
             - if current_user
-              = link_to edit_user_registration_path, class: 'nav-link' do
-                = current_user.email
-                - if current_user.admin?
-                  .badge.badge-pill.badge-primary Admin
-                - if current_user.brigade_leaders.any?
-                  .badge.badge-pill.badge-secondary Brigade Leader
-              = link_to 'Log Out', destroy_user_session_path, method: :delete, class: 'nav-link'
+              .nav-item
+                = link_to edit_user_registration_path, class: ['nav-link', ('active' if current_page?(edit_user_registration_path))] do
+                  = current_user.email
+                  - if current_user.admin?
+                    .badge.badge-pill.badge-primary Admin
+                  - if current_user.brigade_leaders.any?
+                    .badge.badge-pill.badge-secondary Brigade Leader
+              .nav-item
+                = link_to 'Log Out', destroy_user_session_path, method: :delete, class: 'nav-link'
             - else
-              = link_to 'Log In', new_user_session_path, class: 'nav-link'
+              .nav-item{ class: ('active' if current_page?(new_user_session_path)) }
+                = link_to 'Log In', new_user_session_path, class: 'nav-link'
     - if notice || alert
       - if notice
         %p.alert.alert-info= notice
