@@ -15,4 +15,5 @@
 //= require turbolinks
 //= require chartkick
 //= require Chart.bundle
+//= require project_search
 //= require_tree .
