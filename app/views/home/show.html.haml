@@ -6,6 +6,6 @@
           .list-group-item
             %strong= brigade.name
             .badge.badge-secondary
-              = pluralize brigade.brigade_leaders.count, 'Leader'
+              = pluralize brigade.brigade_leaders.size, 'Leader'
             .badge.badge-secondary
-              = pluralize brigade.brigade_projects.count, 'Project'
+              = pluralize brigade.brigade_projects.size, 'Project'
