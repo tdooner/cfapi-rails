@@ -105,16 +105,16 @@ namespace :sync do
       ApiObject::BrigadeProjectIndexEntry.where.not(id: existing_objects).destroy_all
     end
 
-    email_builder = BrigadeProjectsEmailBuilder.new
-    email_builder.capture_events do
-      BrigadeProject.replace_all_from_project_database(
-        ApiObject::BrigadeProjectIndexEntry.all
-      )
-    end
-    email_builder.capture_events do
-      Rake::Task['sync:project_github'].invoke
-    end
-    email_builder.send_email if email_builder.changes?
+    # email_builder = BrigadeProjectsEmailBuilder.new
+    # email_builder.capture_events do
+    #   BrigadeProject.replace_all_from_project_database(
+    #     ApiObject::BrigadeProjectIndexEntry.all
+    #   )
+    # end
+    # email_builder.capture_events do
+    #   Rake::Task['sync:project_github'].invoke
+    # end
+    # email_builder.send_email if email_builder.changes?
   end
 
   desc 'sync brigade project githubs'

@@ -6,7 +6,6 @@ class BrigadeProjectsMailer < ApplicationMailer
 
     mail(
       to: 'tdooner@codeforamerica.org',
-      cc: 'calfano@codeforamerica.org,anlawyer@berkeley.edu',
       subject: "Brigade Project Update - #{Date.today}"
     )
   end
